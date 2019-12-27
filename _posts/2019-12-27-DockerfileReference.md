@@ -70,7 +70,7 @@ ENTRYPOINT has to forms
 ENTRYPOINT [“executable”, “param1”, “param2”] (exec form)  
 ENTRYPOINT command param1 param2 (shell form)  
 Note: Dockerfile should specify at least one of CMD or ENTRYPOINT commands. 
-![EntryPointnCmd](/images/EntryPointnCmd.jpg){:class="img-responsive"}{:height="700px" width="400px"}  
+![EntryPointnCmd](/images/EntryPointnCmd.jpg){:class="img-responsive"}{:height="1700px" width="2400px"}  
  
 **VOLUME:**  
 VOLUME [“/data”]  
