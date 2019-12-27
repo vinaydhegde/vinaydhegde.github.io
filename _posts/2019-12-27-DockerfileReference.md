@@ -66,11 +66,11 @@ COPY [--chown=<user>:<group>] <src>,… <dest>
 The COPY instruction copies new files or directories from <src> and adds them to the filesystem of the container at the path <dest>.   
 
 **ENTRYPOINT:**  
-ENTRYPOINT has to forms  
+ENTRYPOINT has two forms  
 ENTRYPOINT [“executable”, “param1”, “param2”] (exec form)  
 ENTRYPOINT command param1 param2 (shell form)  
 Note: Dockerfile should specify at least one of CMD or ENTRYPOINT commands. 
-![EntryPointnCmd](/images/EntryPointnCmd.jpg){:height="1000.003448mm" width="2000.978mm"}   
+![EntryPointnCmd](/images/EntryPointnCmd.jpg){:class="img-responsive"}   
  
 **VOLUME:**  
 VOLUME [“/data”]  
