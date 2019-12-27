@@ -4,8 +4,9 @@ title: "Vinay Hegde, Dockerfile reference"
 date: 2019-12-27
 ---
 
-A Dockerfile must begin with a `FROM` instruction
-Instructions are not case sensitive
+A Dockerfile must begin with a `FROM` instruction.
+
+Instructions are not case sensitive.
 Parser directives:
 Parser directives are optional
 Parser directives do not add layers to the build
