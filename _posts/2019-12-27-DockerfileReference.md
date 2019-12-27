@@ -69,7 +69,8 @@ The COPY instruction copies new files or directories from <src> and adds them to
 ENTRYPOINT has to forms  
 ENTRYPOINT [“executable”, “param1”, “param2”] (exec form)  
 ENTRYPOINT command param1 param2 (shell form)  
-Note: Dockerfile should specify at least one of CMD or ENTRYPOINT commands.   
+Note: Dockerfile should specify at least one of CMD or ENTRYPOINT commands. 
+![EntryPointnCmd](/images/EntryPointnCmd.png){:class="img-responsive"} 
  
 **VOLUME:**  
 VOLUME [“/data”]  
