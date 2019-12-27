@@ -75,7 +75,7 @@ Note: Dockerfile should specify at least one of CMD or ENTRYPOINT commands.
 **VOLUME:**  
 VOLUME [“/data”]  
 The VOLUME instruction creates a mount point with the specified name and marks it as holding externally mounted volumes from native host or other containers
-![EntryPointnCmd](/images/voulume-example.bmp){:class="img-responsive"}    
+![volume-example](/images/volume-example.bmp){:class="img-responsive"}    
 Create a Volume & mount it from Docker CLI:  
 docker volume create my-vol  
 docker volume ls  
