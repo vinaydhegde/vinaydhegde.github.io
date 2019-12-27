@@ -1,3 +1,9 @@
+---
+layout: post
+title: "Docker Run"
+date: 2019-12-27
+---
+
 - Docker runs processes in isolated containers.  
 - A container is a process which runs on a host.  
 When an operator executes ‘docker run’, the container process that runs is, isolated in that it has its own file system, its own networking, and its own isolated process tree separate from the host.  
