@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Dockerfile reference"
+title: "Dockerfile Reference"
 date: 2019-12-27
 ---
 
