@@ -9,12 +9,12 @@ A Dockerfile must begin with a `FROM` instruction.
 Instructions are not case sensitive.
 
 **Parser directives:**
-Parser directives are optional
-Parser directives do not add layers to the build
+Parser directives are optional\s\s
+Parser directives do not add layers to the build\s
 #directive =  value
 
 **Environmnet variables:**
-Environment variables are declared with ENV statement
+Environment variables are declared with ENV statement\
 For example:
 ENV abc=hello
 ENV foo bar
