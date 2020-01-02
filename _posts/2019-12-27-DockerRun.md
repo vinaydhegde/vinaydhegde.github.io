@@ -98,7 +98,7 @@ docker run -it -m 300M --memory-swap 1G ubuntu:14.04 /bin/bash (the processes in
 By default, all containers get the same proportion of CPU cycles. This proportion can be modified by changing the container’s CPU share weighting relative to the weighting of all other running containers.  
 To modify the proportion from the default of 1024, use the -c or --cpu-shares flag to set the weighting to 2 or higher  
 The proportion will only apply when CPU-intensive processes are running. When tasks in one container are idle, other containers can use the left-over CPU time. The actual amount of CPU time will vary depending on the number of containers running on the system  
-For example, consider three containers, one has a cpu-share of 1024 and two others have a cpu-share setting of 512. When processes in all three containers attempt to use 100% of CPU, the first container would receive 50% of the total CPU time. If you add a fourth container with a cpu-share of 1024, the first container only gets 33% of the CPU. The remaining containers receive 16.5%, 16.5% and 33% of the CPU
+For example, consider three containers, one has a cpu-share of 1024 and two others have a cpu-share setting of 512. When processes in all three containers attempt to use 100% of CPU, the first container would receive 50% of the total CPU time. If you add a fourth container with a cpu-share of 1024, the first container only gets 33% of the CPU. The remaining containers receive 16.5%, 16.5% and 33% of the CPU  
 **EXPOSE (incoming ports):**  
 --expose=[]: Expose a port or a range of ports inside the container.  
              These are additional to those exposed by the `EXPOSE` instruction  
