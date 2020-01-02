@@ -5,6 +5,6 @@ Docker compose version3 = Docker version 17++
 
 Fast track DIS(Docker Images) management is achieved using Dockerfile  
 Fast track service management is achieved using YAML  
-| XML  |JSON   | YAML  |
-|---|---|---|
-|  DSL (Data serialization Language) |  DSL (Data serialization Language) |DSL+DAL   |
+| XML                          | JSON                                  | YAML                                  |
+|------------------------------|---------------------------------------|---------------------------------------|
+| DSL (Data serialization Lang | DSL + DAL (Data<br>  Automation Lang) | DSL + DAL (Data<br>  Automation Lang) |
