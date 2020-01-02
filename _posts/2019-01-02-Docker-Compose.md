@@ -9,3 +9,9 @@ Fast track service management is achieved using YAML
 | XML                          | JSON                               | YAML                               |
 |------------------------------|------------------------------------|------------------------------------|
 | DSL (Data serialization Lang | DSL + DAL (Data   Automation Lang) | DSL + DAL (Data   Automation Lang) |
+
+.yaml-> for App automation  
+.yml -> Infra auto  
+
+Create a docker compose file locally (docker-compose.yml) from  
+
