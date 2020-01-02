@@ -14,7 +14,7 @@ Fast track service management is achieved using YAML
 .yml -> Infra auto  
 
 Create a docker compose file locally (docker-compose.yml) from  
-https://github.com/vinaydhegde/DockerStuff/blob/master/Example1-docker-compose.yml  
+[https://github.com/vinaydhegde/DockerStuff/blob/master/Example1-docker-compose.yml]  
 
 Run 'docker-compose up' command  
 docker network ls -> it will list a new network called <CurrentDir>-default. For ex: dockercompose_default.  
@@ -25,9 +25,9 @@ Mysql -u root -p
 
 In case SOA model, 'network' is not used. We use 'link'    
 Below are the example for 'link' with docker-compose:  
-https://github.com/vinaydhegde/DockerStuff/blob/master/Example1-docker-compose.yml  
-https://github.com/vinaydhegde/DockerStuff/blob/master/Example2-docker-compose.yml  
-https://github.com/vinaydhegde/DockerStuff/blob/master/Example3-docker-compose.yml  
+[https://github.com/vinaydhegde/DockerStuff/blob/master/Example1-docker-compose.yml]  
+[https://github.com/vinaydhegde/DockerStuff/blob/master/Example2-docker-compose.yml]  
+[https://github.com/vinaydhegde/DockerStuff/blob/master/Example3-docker-compose.yml]  
 
 docker-compose.override.yml -> is used to re-create containers in an incremental/iteration way.  
 i.e. it will refer both docker-compose & docker-compose.override.yml to recreate containers. docker-compose.override.yml  doesn't contain image names  
