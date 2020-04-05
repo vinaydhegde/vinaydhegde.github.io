@@ -95,7 +95,7 @@ Clone down the [devops-tree-k8s](https://github.com/vinaydhegde/devops-tree-k8s)
 
 ```sh
 $ git clone https://github.com/vinaydhegde/devops-tree-k8s
-$ cd fdevops-tree-k8s
+$ cd devops-tree-k8s
 $ docker-compose up -d --build
 ```
 
@@ -109,12 +109,12 @@ $ docker-compose exec server python manage.py seed_db
 Test out the below server-side endpoint in your browser of choice:
 
 {% raw %}
-1. [http://localhost:5001/devops](http://localhost:5001/devops)
+[http://localhost:5001/devops](http://localhost:5001/devops)
 {% endraw %}
 
 Navigate to [http://localhost:8080](http://localhost:8080).
 
-<img src="/assets/img/blog/flask-kubernetes/v1.gif" style="max-width:80%;" alt="v1 app">
+<img src="/assets/img/blog/flask-kubernetes/v1.gif" style="max-width:80%;" alt="devops-tree app">
 
 Take a quick look at the code before moving on:
 
@@ -163,8 +163,6 @@ Take a quick look at the code before moving on:
         │   └── config.py
         └── requirements.txt
 ```
-
-> Want to learn how to build this project? Check out the [Developing a Single Page App with Flask and Vue.js](https://testdriven.io/developing-a-single-page-app-with-flask-and-vuejs) blog post.
 
 ## Minikube
 
@@ -295,7 +293,7 @@ db-pv        2Gi       RWO           Retain          Available           standar
 
 You should also see this object in the dashboard:
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard2.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
+<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard2.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard Image">
 
 *k8s/persistent-volume-claim.yml*:
 
@@ -331,7 +329,7 @@ NAME           STATUS    VOLUME        CAPACITY   ACCESS MODES   STORAGECLASS   
 db-pvc         Pending   db-pv         0                         standard       7s
 ```
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pvc.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
+<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pvc.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard Image">
 
 ## Secrets
 
@@ -862,7 +860,7 @@ $ kubectl create -f ./k8s/react-service.yml
 
 Ensure [http://devops-tree/](http://devops-tree/) works as expected.
 
-<img src="/assets/img/blog/flask-kubernetes/bookshelf.png" style="max-width:80%;padding-top:20px;padding-bottom:10px;" alt="bookshelf app">
+<img src="/assets/img/blog/flask-kubernetes/bookshelf.png" style="max-width:80%;padding-top:20px;padding-bottom:10px;" alt="devops-tree app">
 
 ## Scaling
 
@@ -907,11 +905,7 @@ You should see different `container_id`s being returned, indicating that request
 {"container_id":"flask-6844c9569-5znvr"}
 ```
 
-What happens if we scale down as traffic is hitting the cluster?
-
-<img src="/assets/img/blog/flask-kubernetes/curl.gif" style="max-width:90%;" alt="curl">
-
-Traffic is re-routed appropriately. Try this again, but this time scale up.
+What happens if you scale down as traffic is hitting the cluster? Open two terminal windows and test this on your on. You should see traffic being re-routed appropriately. Try it again, but this time scale up.
 
 ## Helpful Commands
 
