@@ -54,4 +54,27 @@ Kubernetes| large community, flexible, most features, hip| complex setup, high l
 Docker Swarm| easy to set up, perfect for smaller clusters| limited by the Docker API
 ECS| fully-managed service, integrated with AWS| vendor lock-in
 
+There's also a number of managed Kubernetes services on the market:
+
+1. Google Kubernetes Engine (GKE)
+1. Elastic Kubernetes Service (EKS)
+1. Azure Kubernetes Service (AKS)
+1. DigitalOcean Kubernetes
+
+## Kubernetes Concepts
+Before diving in, let's look at some of the basic building blocks that you have to work with from the [Kubernetes API]:(https://kubernetes.io/docs/concepts/overview/kubernetes-api/)
+
+
+1. A [Node](https://kubernetes.io/docs/concepts/architecture/nodes/) is a worker machine provisioned to run Kubernetes. Each Node is managed by the Kubernetes master.
+1. A [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) is a logical, tightly-coupled group of application containers that run on a Node. Containers in a Pod are deployed together and share resources (like data volumes and network addresses). Multiple Pods can run on a single Node.
+1. A [Service](https://kubernetes.io/docs/concepts/services-networking/service/) is a logical set of Pods that perform a similar function. It enables load balancing and service discovery. It's an abstraction layer over the Pods; Pods are meant to be ephemeral while services are much more persistent.
+1. [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) are used to describe the desired state of Kubernetes. They dictate how Pods are created, deployed, and replicated.
+1. [Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are key/value pairs that are attached to resources (like Pods) which are used to organize related resources. You can think of them like CSS selectors. For example:
+* Environment - dev, test, prod
+* App version - beta, 1.2.1
+* Type - client, server, db
+1. [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) is a set of routing rules used to control the external access to Services based on the request host or path.
+1. [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) are used to persist data beyond the life of a container. They are especially important for stateful applications like Redis and Postgres.
+* A [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
+* A [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) is a request to use the PersistentVolume by a user.
 
