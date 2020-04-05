@@ -4,10 +4,7 @@ title: "Deploy and Run an Application in Kubernetes"
 date: 2020-04-05
 ---
 
-In this post, we'll first take a look at Kubernetes and container orchestration in general and then we'll walk through a step-by-step tutorial that details how to deploy a Flask-based microservice (along with Postgres and Vue.js) to a Kubernetes cluster.
-
-> This is an intermediate-level tutorial. It assumes that you have basic working knowledge of Flask and Docker.
-Review the [Microservices with Docker, Flask, and React](http://testdriven.io/) course for more info on these tools.
+In this post, we'll first take a look at Kubernetes and container orchestration in general and then we'll walk through a step-by-step tutorial that details how to deploy a Flask-based microservice (along with Postgres and React.js) to a Kubernetes cluster.
 
 Dependencies:
 
@@ -32,8 +29,8 @@ By the end of this tutorial, you should be able to...
 1. Configure a Kubernetes cluster to run locally with Minikube
 1. Set up a volume to hold Postgres data within a Kubernetes cluster
 1. Use Kubernetes Secrets to manage sensitive information
-1. Run Flask, Gunicorn, Postgres, and Vue on Kubernetes
-1. Expose Flask and Vue to external users via an Ingress
+1. Run Flask, Gunicorn, Postgres, and React on Kubernetes
+1. Expose Flask and React to external users via an Ingress
 
 ## What is Container Orchestration?
 
@@ -71,7 +68,6 @@ There's also a number of [managed](https://kubernetes.io/docs/setup/pick-right-s
 1. [Elastic Container Service](https://aws.amazon.com/eks/) (EKS)
 1. [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) (AKS)
 
-> For more, review the [Choosing the Right Containerization and Cluster Management Tool](https://blog.kublr.com/choosing-the-right-containerization-and-cluster-management-tool-fdfcec5700df) blog post.
 
 ## Kubernetes Concepts
 
@@ -90,73 +86,33 @@ Before diving in, let's look at some of the basic building blocks that you have 
     - A *[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)* defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
     - A *[PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)* is a request to use the PersistentVolume by a user.
 
-> For more, review the [Learn Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) tutorial as well as the [Kubernetes Concepts](https://mherman.org/presentations/flask-kubernetes/#38) slides from the [Scaling Flask with Kubernetes](https://mherman.org/presentations/flask-kubernetes) talk.
+> For more, review the [Learn Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) tutorial.
 
 
 ## Project Setup
 
-Clone down the [flask-vue-kubernetes](https://github.com/testdrivenio/flask-vue-kubernetes) repo, and then build the images and spin up the containers:
+Clone down the [devops-tree-kk8s](https://github.com/vinaydhegde/devops-tree-k8s) repo, and then build the images and spin up the containers:
 
 ```sh
-$ git clone https://github.com/testdrivenio/flask-vue-kubernetes
-$ cd flask-vue-kubernetes
+$ git clone https://github.com/vinaydhegde/devops-tree-k8s
+$ cd fdevops-tree-k8s
 $ docker-compose up -d --build
 ```
 
-Create and seed the database `books` table:
+Create and seed the database `devops` table:
 
 ```sh
 $ docker-compose exec server python manage.py recreate_db
 $ docker-compose exec server python manage.py seed_db
 ```
 
-Test out the following server-side endpoints in your browser of choice:
+Test out the below server-side endpoint in your browser of choice:
 
 {% raw %}
-1. [http://localhost:5001/books/ping](http://localhost:5001/books/ping)
-
-    ```json
-    {
-      "container_id": "74c36a1f97d8",
-      "message": "pong!",
-      "status": "success"
-    }
-    ```
-
-    > `container_id` is the id of the Docker container the app is running in.
-    >
-    ```
-    $ docker ps --filter name=flask-vue-kubernetes_server --format "{{.ID}}"
-    74c36a1f97d8
-    ```
+1. [http://localhost:5001/devops](http://localhost:5001/devops)
 {% endraw %}
 
-1. [http://localhost:5001/books](http://localhost:5001/books):
-
-    ```json
-    {
-      "books": [{
-        "author": "J. K. Rowling",
-        "id": 2,
-        "read": false,
-        "title": "Harry Potter and the Philosopher's Stone"
-      }, {
-        "author": "Dr. Seuss",
-        "id": 3,
-        "read": true,
-        "title": "Green Eggs and Ham"
-      }, {
-        "author": "Jack Kerouac",
-        "id": 1,
-        "read": false,
-        "title": "On the Road"
-      }],
-      "container_id": "74c36a1f97d8",
-      "status": "success"
-    }
-    ```
-
-Navigate to [http://localhost:8080](http://localhost:8080). Make sure the basic CRUD functionality works as expected:
+Navigate to [http://localhost:8080](http://localhost:8080).
 
 <img src="/assets/img/blog/flask-kubernetes/v1.gif" style="max-width:80%;" alt="v1 app">
 
@@ -174,33 +130,23 @@ Take a quick look at the code before moving on:
 │   ├── postgres-deployment.yml
 │   ├── postgres-service.yml
 │   ├── secret.yml
-│   ├── vue-deployment.yml
-│   └── vue-service.yml
+│   ├── react-deployment.yml
+│   └── react-service.yml
 └── services
     ├── client
     │   ├── Dockerfile
     │   ├── Dockerfile-minikube
     │   ├── README.md
     │   ├── build
-    │   ├── config
-    │   │   ├── dev.env.js
-    │   │   ├── index.js
-    │   │   └── prod.env.js
-    │   ├── index.html
+    │   ├── node_modules
+    |   ├── public
     │   ├── package.json
     │   ├── src
-    │   │   ├── App.vue
-    │   │   ├── assets
-    │   │   │   └── logo.png
-    │   │   ├── components
-    │   │   │   ├── Alert.vue
-    │   │   │   ├── Books.vue
-    │   │   │   ├── HelloWorld.vue
-    │   │   │   └── Ping.vue
-    │   │   ├── main.js
-    │   │   └── router
-    │   │       └── index.js
-    │   └── static
+    │   │   ├── App.js
+    │   │   ├── index.js
+    │   │   ├── utils.js
+    │   │   ├── Tree
+    │   │       ├── index.js
     ├── db
     │   ├── create.sql
     │   └── dockerfile
@@ -212,7 +158,7 @@ Take a quick look at the code before moving on:
         │   ├── __init__.py
         │   ├── api
         │   │   ├── __init__.py
-        │   │   ├── books.py
+        │   │   ├── devops.py
         │   │   └── models.py
         │   └── config.py
         └── requirements.txt
