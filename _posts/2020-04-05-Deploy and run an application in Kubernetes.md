@@ -31,15 +31,27 @@ As you move from deploying containers on a single machine to deploying them acro
 
 Orchestration tools help with:
 
-    Cross-server container communication
-    Horizontal scaling
-    Service discovery
-    Load balancing
-    Security/TLS
-    Zero-downtime deploys
-    Rollbacks
-    Logging
-    Monitoring
+1. Cross-server container communication
+1. Horizontal scaling
+1. Service discovery
+1. Load balancing
+1. Security/TLS
+1. Zero-downtime deploys
+1. Rollbacks
+1. Logging
+1. Monitoring
 
-This is where Kubernetes fits in along with a number of other orchestration tools -- like Docker Swarm, ECS, Mesos, and Nomad.
+This is where Kubernetes fits in along with a number of other orchestration tools -- like Docker Swarm, ECS and Mesos.
+
+Which one should you use?
+
+1. use Kubernetes if you need to manage large, complex clusters
+1. use Docker Swarm if you are just getting started and/or need to manage small to medium-sized clusters
+1. use ECS if you're already using a number of AWS services
+
+Tool| Pros| Cons
+Kubernetes| large community, flexible, most features, hip| complex setup, high learning curve, hip
+Docker Swarm| easy to set up, perfect for smaller clusters| limited by the Docker API
+ECS| fully-managed service, integrated with AWS| vendor lock-in
+
 
