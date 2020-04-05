@@ -23,6 +23,23 @@ By the end of this tutorial, you will be able to:
 1. Configure a Kubernetes cluster to run locally with Minikube
 1. Set up a volume to hold Postgres data within a Kubernetes cluster
 1. Use Kubernetes Secrets to manage sensitive information
-1. Run Flask, Gunicorn, Postgres, and Vue on Kubernetes
-1. Expose Flask and Vue to external users via an Ingress
+1. Run Flask, Gunicorn, Postgres, and React on Kubernetes
+1. Expose Flask and React to external users via an Ingress
+
+## What is Container Orchestration?
+As you move from deploying containers on a single machine to deploying them across a number of machines, you'll need an orchestration tool to manage (and automate) the arrangement, coordination, and availability of the containers across the entire system.
+
+Orchestration tools help with:
+
+    Cross-server container communication
+    Horizontal scaling
+    Service discovery
+    Load balancing
+    Security/TLS
+    Zero-downtime deploys
+    Rollbacks
+    Logging
+    Monitoring
+
+This is where Kubernetes fits in along with a number of other orchestration tools -- like Docker Swarm, ECS, Mesos, and Nomad.
 
