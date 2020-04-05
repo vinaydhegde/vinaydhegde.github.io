@@ -100,9 +100,18 @@ footer
   bottom: 0;
   width: 100%;
 }*/
+
 footer {
-border-top: 2px dotted blue;
-font-size: .7em;
+    float: right;
+    border-top: 2px dotted blue;
+    height: 35px;
+    margin: 0px 50px 0px 0px;
+    background: #9FF;
+    color: #000;
+    text-align: right;
+    padding: 10px 30px;
+    width: 180px;
+    font-size: .7em;
 }
 
 
