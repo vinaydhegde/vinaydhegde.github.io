@@ -1,18 +1,7 @@
 ---
-title: Running Flask on Kubernetes
-layout: blog
-share: true
-toc: true
-permalink: running-flask-on-kubernetes
-type: blog
-author: Michael Herman
-lastname: herman
-description: The following is a step-by-step walkthrough of how to deploy a Flask-based microservice (along with Postgres and Vue.js) to a Kubernetes cluster.
-keywords: "kubernetes, flask, docker, python, minikube, vue, container orchestration"
-image: assets/img/blog/flask-kubernetes/running_flask_kubernetes.png
-image_alt: python and kubernetes
-blurb: The following is a step-by-step walkthrough of how to deploy a Flask-based microservice (along with Postgres and Vue.js) to a Kubernetes cluster.
-date: 2018-09-19
+layout: post
+title: "Deploy and Run an Application in Kubernetes"
+date: 2020-04-05
 ---
 
 In this post, we'll first take a look at Kubernetes and container orchestration in general and then we'll walk through a step-by-step tutorial that details how to deploy a Flask-based microservice (along with Postgres and Vue.js) to a Kubernetes cluster.
@@ -22,11 +11,11 @@ Review the [Microservices with Docker, Flask, and React](http://testdriven.io/) 
 
 Dependencies:
 
-- Kubernetes v1.10
-- Minikube v0.28.2
-- Kubectl v1.11
-- Docker v18.06.1-ce
-- Docker-Compose v1.22.0
+- Kubernetes v1.15.0
+- Kubectl v1.16.0
+- Minikube v1.2.0
+- Docker v19.03.8
+- Docker-Compose v1.17.1
 
 {% if page.toc %}
   {% include toc.html %}
