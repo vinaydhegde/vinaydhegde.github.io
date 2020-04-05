@@ -91,7 +91,7 @@ Before diving in, let's look at some of the basic building blocks that you have 
 
 ## Project Setup
 
-Clone down the [devops-tree-kk8s](https://github.com/vinaydhegde/devops-tree-k8s) repo, and then build the images and spin up the containers:
+Clone down the [devops-tree-k8s](https://github.com/vinaydhegde/devops-tree-k8s) repo, and then build the images and spin up the containers:
 
 ```sh
 $ git clone https://github.com/vinaydhegde/devops-tree-k8s
@@ -121,7 +121,7 @@ Take a quick look at the code before moving on:
 ```sh
 ├── README.md
 ├── docker-compose.yml
-├── kubernetes
+├── k8s
 │   ├── flask-deployment.yml
 │   ├── flask-service.yml
 │   ├── minikube-ingress.yml
@@ -229,7 +229,7 @@ spec:
     spec:
       containers:
       - name: flask
-        image: mjhea0/flask-kubernetes:latest
+        image: vinaydhegde/flask-kubernetes:latest
         ports:
         - containerPort: 5000
 ```
@@ -251,13 +251,13 @@ In order to run our app, we'll need to set up the following objects:
 
 Again, since containers are ephemeral, we need to configure a volume, via a [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistent-volumes) and a [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims), to store the Postgres data outside of the Pod.
 
-Take note of the YAML file in *kubernetes/persistent-volume.yml*:
+Take note of the YAML file in *k8s/persistent-volume.yml*:
 
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: postgres-pv
+  name: db-pv
   labels:
     type: local
 spec:
@@ -267,17 +267,17 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/postgres-pv"
+    path: "/data/db-pv"
 ```
 
-This configuration will create a [hostPath](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath) PersistentVolume at "/data/postgres-pv" within the Node. The size of the volume is 2 gibibytes with an access mode of [ReadWriteOnce](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), which means that the volume can be mounted as read-write by a single node.
+This configuration will create a [hostPath](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath) PersistentVolume at "/data/db-pv" within the Node. The size of the volume is 2 gibibytes with an access mode of [ReadWriteOnce](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), which means that the volume can be mounted as read-write by a single node.
 
 > It's worth noting that Kubernetes only supports using a hostPath on a single-node cluster.
 
 Create the volume:
 
 ```sh
-$ kubectl apply -f ./kubernetes/persistent-volume.yml
+$ kubectl apply -f ./k8s/persistent-volume.yml
 ```
 
 View details:
@@ -290,20 +290,20 @@ You should see:
 
 ```sh
 NAME         CAPACITY  ACCESS MODES  RECLAIM POLICY  STATUS     CLAIM    STORAGECLASS  REASON   AGE
-postgres-pv  2Gi       RWO           Retain          Available           standard               21s
+db-pv        2Gi       RWO           Retain          Available           standard               26s
 ```
 
 You should also see this object in the dashboard:
 
 <img src="/assets/img/blog/flask-kubernetes/minikube-dashboard2.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
 
-*kubernetes/persistent-volume-claim.yml*:
+*k8s/persistent-volume-claim.yml*:
 
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pvc
+  name: db-pvc
   labels:
     type: local
 spec:
@@ -312,13 +312,14 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  volumeName: postgres-pv
+  volumeName: db-pv
+  storageClassName: standard
 ```
 
 Create the volume claim:
 
 ```sh
-$ kubectl apply -f ./kubernetes/persistent-volume-claim.yml
+$ kubectl apply -f ./k8s/persistent-volume-claim.yml
 ```
 
 View details:
@@ -327,7 +328,7 @@ View details:
 $ kubectl get pvc
 
 NAME           STATUS    VOLUME        CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-postgres-pvc   Pending   postgres-pv   0                         standard       7s
+db-pvc         Pending   db-pv         0                         standard       7s
 ```
 
 <img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pvc.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
@@ -336,7 +337,7 @@ postgres-pvc   Pending   postgres-pv   0                         standard       
 
 [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) are used to handle sensitive info such as passwords, API tokens, and SSH keys. We'll set up a Secret to store our Postgres database credentials.
 
-*kubernetes/secret.yml*:
+*k8s/secret.yml*:
 
 ```yaml
 apiVersion: v1
@@ -345,26 +346,23 @@ metadata:
   name: postgres-credentials
 type: Opaque
 data:
-  user: c2FtcGxl
-  password: cGxlYXNlY2hhbmdlbWU=
+  user: cG9zdGdyZXM=
+  password: bXlwb3N0Z3Jlcw==
 ```
 
 The `user` and `password` fields are base64 encoded strings ([security via obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity)):
 
 ```sh
-$ echo -n "pleasechangeme" | base64
-cGxlYXNlY2hhbmdlbWU=
-
-$ echo -n "sample" | base64
-c2FtcGxl
+$ echo -n "something" | base64
+c29tZXRoaW5nCg==
 ```
 
-> Keep in mind that any user with access to the cluster will be able to read the values in plaintext. Take a look at [Vault](https://testdriven.io/managing-secrets-with-vault-and-consul) if you want to encrypt secrets in transit and at rest.
+> Keep in mind that any user with access to the cluster will be able to read the values in plaintext. Use `vault` if you want to encrypt secrets in transit and at rest.
 
 Add the Secrets object:
 
 ```sh
-$ kubectl apply -f ./kubernetes/secret.yml
+$ kubectl apply -f ./k8s/secret.yml
 ```
 
 <img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-secrets.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
@@ -373,25 +371,31 @@ $ kubectl apply -f ./kubernetes/secret.yml
 
 With the volume and database credentials set up in the cluster, we can now configure the Postgres database itself.
 
-*kubernetes/postgres-deployment.yml*:
+*k8s/postgres-deployment.yml*:
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  creationTimestamp: null
   labels:
     name: database
+  name: postgres
 spec:
+  progressDeadlineSeconds: 2147483647
   replicas: 1
+  selector:
+    matchLabels:
+      service: postgres
   template:
     metadata:
+      creationTimestamp: null
       labels:
         service: postgres
     spec:
       containers:
       - name: postgres
-        image: postgres:10.4-alpine
+        image: postgres:12.1-alpine
         env:
           - name: POSTGRES_USER
             valueFrom:
@@ -404,13 +408,17 @@ spec:
                 name: postgres-credentials
                 key: password
         volumeMounts:
-          - name: postgres-volume-mount
-            mountPath: /var/lib/postgresql/data
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-volume-mount
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
       volumes:
       - name: postgres-volume-mount
         persistentVolumeClaim:
-          claimName: postgres-pvc
-      restartPolicy: Always
+          claimName: db-pvc
 ```
 
 What's happening here?
@@ -430,12 +438,12 @@ What's happening here?
 
 Further, the Pod name is `postgres` and the image is `postgres:10.4-alpine`, which will be pulled from Docker Hub. The database credentials, from the Secret object, are passed in as well.
 
-Finally, when applied, the volume claim will be mounted into the Pod. The claim is mounted to "/var/lib/postgresql/data" - the default location - while the data will be stored in the PersistentVolume, "/data/postgres-pv".
+Finally, when applied, the volume claim will be mounted into the Pod. The claim is mounted to "/var/lib/postgresql/data" - the default location - while the data will be stored in the PersistentVolume, "/data/db-pv".
 
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./kubernetes/postgres-deployment.yml
+$ kubectl create -f ./k8s/postgres-deployment.yml
 ```
 
 Status:
@@ -444,10 +452,10 @@ Status:
 $ kubectl get deployments
 
 NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-postgres   1         1         1            1           26s
+postgres   1         1         1            1           30s
 ```
 
-*kubernetes/postgres-service.yml*:
+*k8s/postgres-service.yml*:
 
 ```yaml
 apiVersion: v1
@@ -483,42 +491,35 @@ Since the [Service type](https://kubernetes.io/docs/concepts/services-networking
 Create the service:
 
 ```sh
-$ kubectl create -f ./kubernetes/postgres-service.yml
+$ kubectl create -f ./k8s/postgres-service.yml
 ```
 
-Create the `books` database, using the Pod name:
+Create the `devops` database, using the Pod name:
 
 ```sh
 $ kubectl get pods
 
 NAME                        READY     STATUS    RESTARTS   AGE
-postgres-8459cf97b6-ppp2f   1/1       Running   0          6m
+postgres-6fb596d5b-mqmzz    1/1       Running   0          6m
 
-$ kubectl exec postgres-8459cf97b6-ppp2f --stdin --tty -- createdb -U sample books
+$ kubectl exec postgres-6fb596d5b-mqmzz --stdin --tty -- createdb -U postgres devops
 ```
 
 Verify the creation:
 
 ```sh
-kubectl exec postgres-8459cf97b6-ppp2f --stdin --tty -- psql -U sample
+kubectl exec postgres-6fb596d5b-mqmzz --stdin --tty -- psql -U sample devops
 
 psql (10.4)
 Type "help" for help.
 
-sample=# \l
+postgress=# \l
                                  List of databases
    Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
 -----------+----------+----------+------------+------------+-----------------------
- books     | sample   | UTF8     | en_US.utf8 | en_US.utf8 |
- postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
- sample    | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
- template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
-           |          |          |            |            | postgres=CTc/postgres
- template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
-           |          |          |            |            | postgres=CTc/postgres
-(5 rows)
+ devops    | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
 
-sample=#
+postgres=#
 ```
 
 > You can also get the Pod name via:
@@ -530,7 +531,7 @@ sample=#
 > Assign the value to a variable and then create the database:
 > ```sh
 > $ POD_NAME=$(kubectl get pod -l service=postgres -o jsonpath="{.items[0].metadata.name}")
-> $ kubectl exec $POD_NAME --stdin --tty -- createdb -U sample books
+> $ kubectl exec $POD_NAME --stdin --tty -- createdb -U postgres devops
 > ```
 
 ## Flask
@@ -541,44 +542,58 @@ Take a moment to review the Flask project structure along with the *dockerfile* 
 1. *services/server/dockerfile*
 1. *services/server/entrypoint.sh*
 
-*kubernetes/flask-deployment.yml*:
+*k8s/flask-deployment.yml*:
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask
+  creationTimestamp: null
   labels:
     name: flask
+  name: flask
 spec:
+  progressDeadlineSeconds: 2147483647
   replicas: 1
+  selector:
+    matchLabels:
+      app: flask
   template:
     metadata:
+      creationTimestamp: null
       labels:
         app: flask
     spec:
       containers:
-      - name: flask
-        image: mjhea0/flask-kubernetes:latest
-        env:
+      - env:
         - name: FLASK_ENV
-          value: "development"
+          value: development
         - name: APP_SETTINGS
-          value: "project.config.DevelopmentConfig"
+          value: project.config.DevelopmentConfig
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: postgres-credentials
               key: user
+              name: postgres-credentials
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgres-credentials
               key: password
+              name: postgres-credentials
+        image: vinaydhegde/flask-kubernetes:latest
+        imagePullPolicy: Always
+        name: flask
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
 ```
 
-This should look similar to the Postgres Deployment spec. The big difference is that you can either use my pre-built and pre-pushed image on [Docker Hub](https://hub.docker.com/), `mjhea0/flask-kubernetes`, or build and push your own.
+This should look similar to the Postgres Deployment spec. The big difference is that you can either use my pre-built and pre-pushed image on [Docker Hub](https://hub.docker.com/), `vinaydhegde/flask-kubernetes`, or build and push your own.
 
 For example:
 
@@ -587,14 +602,14 @@ $ docker build -t <YOUR_DOCKER_HUB_NAME>/flask-kubernetes ./services/server
 $ docker push <YOUR_DOCKER_HUB_NAME>/flask-kubernetes
 ```
 
-If you use your own, make sure you replace `mjhea0` with your Docker Hub name in *kubernetes/flask-deployment.yml* as well.
+If you use your own, make sure you replace `vinaydhegde` with your Docker Hub name in *k8s/flask-deployment.yml* as well.
 
 > Alternatively, if don't want to push the image to a Docker registry, after you build the image locally, you can set the `image-pull-policy` flag to `Never` to always use the local image.
 
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./kubernetes/flask-deployment.yml
+$ kubectl create -f ./k8s/flask-deployment.yml
 ```
 
 <img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pg-deployments.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
@@ -625,7 +640,7 @@ spec:
 Create the service:
 
 ```sh
-$ kubectl create -f ./kubernetes/flask-service.yml
+$ kubectl create -f ./k8s/flask-service.yml
 ```
 
 Make sure the Pod is associated with the Service:
@@ -638,33 +653,23 @@ Apply the migrations and seed the database:
 $ kubectl get pods
 
 NAME                        READY     STATUS    RESTARTS   AGE
-flask-789bcbbdfb-jggqb      1/1       Running   0          21m
-postgres-8459cf97b6-ppp2f   1/1       Running   0          36m
+flask-6844c9569-5znvr       1/1       Running   0          28m
+postgres-6fb596d5b-mqmzz    1/1       Running   0          40m
 ```
 
 ```h
-$ kubectl exec flask-789bcbbdfb-jggqb --stdin --tty -- python manage.py recreate_db
-$ kubectl exec flask-789bcbbdfb-jggqb --stdin --tty -- python manage.py seed_db
+$ kubectl exec flask-6844c9569-5znvr --stdin --tty -- python manage.py recreate_db
+$ kubectl exec flask-6844c9569-5znvr --stdin --tty -- python manage.py seed_db
 ```
 
 Verify:
 
 ```sh
-$ kubectl exec postgres-8459cf97b6-ppp2f --stdin --tty -- psql -U sample
+$ kubectl exec postgres-6fb596d5b-mqmzz --stdin --tty -- psql -U postgres
 
-psql (10.4)
-Type "help" for help.
-
-sample=# \c books
-You are now connected to database "books" as user "sample".
-books=# select * from books;
-
- id |                  title                   |    author     | read
-----+------------------------------------------+---------------+------
-  1 | On the Road                              | Jack Kerouac  | t
-  2 | Harry Potter and the Philosopher's Stone | J. K. Rowling | f
-  3 | Green Eggs and Ham                       | Dr. Seuss     | t
-(3 rows)
+postgres=# \c devops
+You are now connected to database "devops" as user "postgres".
+devops=# select * from devops;
 ```
 
 ## Ingress
@@ -677,7 +682,7 @@ To enable traffic to access the Flask API inside the cluster, you can use either
 
 > For more, review the official [Publishing Services](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) guide.
 
-*kubernetes/minikube-ingress.yml*:
+*k8s/minikube-ingress.yml*:
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -687,14 +692,14 @@ metadata:
   annotations:
 spec:
   rules:
-  - host: hello.world
+  - host: devops-tree
     http:
       paths:
       - path: /
         backend:
-          serviceName: vue
+          serviceName: react
           servicePort: 8080
-      - path: /books
+      - path: /devops
         backend:
           serviceName: flask
           servicePort: 5000
@@ -702,8 +707,8 @@ spec:
 
 Here, we defined the following HTTP rules:
 
-1. `/` - routes requests to the Vue Service (which we still need to set up)
-1. `/books` - routes requests to the Flask Service
+1. `/` - routes requests to the React Service (which we still need to set up)
+1. `/devops` - routes requests to the Flask Service
 
 Enable the Ingress [addon](https://github.com/kubernetes/minikube/tree/master/deploy/addons/ingress):
 
@@ -714,127 +719,136 @@ $ minikube addons enable ingress
 Create the Ingress object:
 
 ```sh
-$ kubectl apply -f ./kubernetes/minikube-ingress.yml
+$ kubectl apply -f ./k8s/minikube-ingress.yml
 ```
 
-Next, you need to update your */etc/hosts* file to route requests from the host we defined, `hello.world`, to the Minikube instance.
+Next, you need to update your */etc/hosts* file to route requests from the host we defined, `devops-tree`, to the Minikube instance.
 
 Add an entry to */etc/hosts*:
 
 ```sh
-$ echo "$(minikube ip) hello.world" | sudo tee -a /etc/hosts
+$ echo "$(minikube ip) devops-tree" | sudo tee -a /etc/hosts
 ```
 
 Try it out:
 
-1. http://hello.world/books/ping
+1. http://devops-tree/devops
 
     ```json
     {
-      "container_id": "flask-c8b8d5bb6-lpf72",
-      "message":"pong!", "status":
-      "success"
-    }
-    ```
+    "name": "Devops",
+    "tooltip": "Devops tree",
+    "children": [
+      {
+        "name": "DBs",
+        "tooltip":"Databases",
+        "children": [
+          {
+            "name": "Oracle DB",
+            "tooltip": "From Oracle"
+          },
+          {
+            "name": "PostgreSql",
+            "tooltip": "open source object-relational database system"
+          },
+          {
+            "name": "MongoDB",
+            "tooltip": "NoSQL database program"
+          }
+        ]
+  
+      },
+    ]
+ }
+```
 
-1. http://hello.world/books
+## React
 
-    ```json
-    {
-      "books": [{
-        "author": "Jack Kerouac",
-        "id": 1,
-        "read": true,
-        "title": "On the Road"
-      }, {
-        "author": "J. K. Rowling",
-        "id": 2,
-        "read": false,
-        "title": "Harry Potter and the Philosopher's Stone"
-      }, {
-        "author": "Dr. Seuss",
-        "id": 3,
-        "read": true,
-        "title": "Green Eggs and Ham"
-      }],
-      "container_id": "flask-c8b8d5bb6-lpf72",
-      "status": "success"
-    }
-    ```
-
-## Vue
-
-Moving right along, review the Vue project along with the associated Dockerfiles:
+Moving right along, review the React project along with the associated Dockerfiles:
 
 1. "services/client"
 1. */services/client/Dockerfile*
 1. */services/client/Dockerfile-minikube*
 
-*kubernetes/vue-deployment.yml*:
+*k8s/react-deployment.yml*:
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vue
+  creationTimestamp: null
   labels:
-    name: vue
+    name: react
+  name: react
 spec:
+  progressDeadlineSeconds: 2147483647
   replicas: 1
+  selector:
+    matchLabels:
+      app: react
   template:
     metadata:
+      creationTimestamp: null
       labels:
-        app: vue
+        app: react
     spec:
       containers:
-      - name: vue
-        image: mjhea0/vue-kubernetes:latest
+      - image: vinaydhegde/react-kubernetes:latest
+        imagePullPolicy: Always
+        name: react
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
 ```
 
 Again, either use my image or build and push your own image to Docker Hub:
 
 ```sh
-$ docker build -t <YOUR_DOCKERHUB_NAME>/vue-kubernetes ./services/client \
+$ docker build -t <YOUR_DOCKERHUB_NAME>/react-kubernetes ./services/client \
     -f ./services/client/Dockerfile-minikube
-$ docker push <YOUR_DOCKERHUB_NAME>/vue-kubernetes
+$ docker push <YOUR_DOCKERHUB_NAME>/react-kubernetes
 ```
 
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./kubernetes/vue-deployment.yml
+$ kubectl create -f ./k8s/react-deployment.yml
 ```
 
 Verify that a Pod was created along with the Deployment:
 
 ```sh
-$ kubectl get deployments vue
+$ kubectl get deployments react
 NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-vue       1         1         1            1           3m
+react     1         1         1            1           4m
 
 $ kubectl get pods
 NAME                        READY     STATUS    RESTARTS   AGE
-flask-c8b8d5bb6-lpf72       1/1       Running   0          3h
-postgres-8459cf97b6-z2b8r   1/1       Running   0          9h
-vue-7bcdf964f-d5p72         1/1       Running   0          4m
+flask-6844c9569-5znvr       1/1       Running   0          5h
+postgres-6fb596d5b-mqmzz    1/1       Running   0          8h
+react-5d56c9549f-jgjhk      1/1       Running   0          9m
 ```
 
 > How would you verify that the Pod and Deployment were created successfully in the dashboard?
 
-*kubernetes/vue-service.yml*:
+*k8s/react-service.yml*:
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: vue
+  name: react
   labels:
-    service: vue
-  name: vue
+    service: react
+  name: react
 spec:
   selector:
-    app: vue
+    app: react
   ports:
   - port: 8080
     targetPort: 8080
@@ -843,10 +857,10 @@ spec:
 Create the service:
 
 ```sh
-$ kubectl create -f ./kubernetes/vue-service.yml
+$ kubectl create -f ./k8s/react-service.yml
 ```
 
-Ensure [http://hello.world/](http://hello.world/) works as expected.
+Ensure [http://devops-tree/](http://devops-tree/) works as expected.
 
 <img src="/assets/img/blog/flask-kubernetes/bookshelf.png" style="max-width:80%;padding-top:20px;padding-bottom:10px;" alt="bookshelf app">
 
@@ -866,38 +880,31 @@ Confirm:
 $ kubectl get deployments flask
 
 NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-flask     2         2         2            2           36m
+flask     2         2         2            2           45m
 ```
 
 ```sh
 $ kubectl get pods -o wide
 
 NAME                        READY     STATUS    RESTARTS   AGE       IP           NODE
-flask-c8b8d5bb6-6fzhx       1/1       Running   0          13s       172.17.0.9   minikube
-flask-c8b8d5bb6-lpf72       1/1       Running   0          3h        172.17.0.5   minikube
-postgres-8459cf97b6-z2b8r   1/1       Running   0          9h        172.17.0.4   minikube
-vue-7bcdf964f-d5p72         1/1       Running   0          14m       172.17.0.8   minikube
+flask-6844c9569-5znvr       1/1       Running   0          20s       172.17.0.12  minikube
+flask-6844c9569-4xmws       1/1       Running   0          4h        172.17.0.13  minikube
+postgres-6fb596d5b-mqmzz    1/1       Running   0          9h        172.17.0.3   minikube
+react-5d56c9549f-jgjhk      1/1       Running   0          14m       172.17.0.4   minikube
 ```
 
 Make a few requests to the service:
 
 ```sh
-$ for ((i=1;i<=10;i++)); do curl http://hello.world/books/ping; done
+$ for ((i=1;i<=10;i++)); do curl http://devops-tree/devops; done
 ```
 
 You should see different `container_id`s being returned, indicating that requests are being routed appropriately via a round robin algorithm between the two replicas:
 
 ```sh
-{"container_id":"flask-c8b8d5bb6-lpf72","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-6fzhx","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-lpf72","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-6fzhx","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-lpf72","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-6fzhx","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-lpf72","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-6fzhx","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-lpf72","message":"pong!","status":"success"}
-{"container_id":"flask-c8b8d5bb6-6fzhx","message":"pong!","status":"success"}
+{"container_id":"flask-6844c9569-5znvr"}
+{"container_id":"flask-6844c9569-4xmws"}
+{"container_id":"flask-6844c9569-5znvr"}
 ```
 
 What happens if we scale down as traffic is hitting the cluster?
@@ -946,27 +953,27 @@ Add a new file called *deploy.sh* to the project root:
 
 echo "Creating the volume..."
 
-kubectl apply -f ./kubernetes/persistent-volume.yml
-kubectl apply -f ./kubernetes/persistent-volume-claim.yml
+kubectl apply -f ./k8s/persistent-volume.yml
+kubectl apply -f ./k8s/persistent-volume-claim.yml
 
 
 echo "Creating the database credentials..."
 
-kubectl apply -f ./kubernetes/secret.yml
+kubectl apply -f ./k8s/secret.yml
 
 
 echo "Creating the postgres deployment and service..."
 
-kubectl create -f ./kubernetes/postgres-deployment.yml
-kubectl create -f ./kubernetes/postgres-service.yml
+kubectl create -f ./k8s/postgres-deployment.yml
+kubectl create -f ./k8s/postgres-service.yml
 POD_NAME=$(kubectl get pod -l service=postgres -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME --stdin --tty -- createdb -U sample books
+kubectl exec $POD_NAME --stdin --tty -- createdb -U postgres devops
 
 
 echo "Creating the flask deployment and service..."
 
-kubectl create -f ./kubernetes/flask-deployment.yml
-kubectl create -f ./kubernetes/flask-service.yml
+kubectl create -f ./k8s/flask-deployment.yml
+kubectl create -f ./k8s/flask-service.yml
 FLASK_POD_NAME=$(kubectl get pod -l app=flask -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py recreate_db
 kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py seed_db
@@ -975,13 +982,13 @@ kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py seed_db
 echo "Adding the ingress..."
 
 minikube addons enable ingress
-kubectl apply -f ./kubernetes/minikube-ingress.yml
+kubectl apply -f ./k8s/minikube-ingress.yml
 
 
-echo "Creating the vue deployment and service..."
+echo "Creating the React deployment and service..."
 
-kubectl create -f ./kubernetes/vue-deployment.yml
-kubectl create -f ./kubernetes/vue-service.yml
+kubectl create -f ./k8s/react-deployment.yml
+kubectl create -f ./k8s/react-service.yml
 ```
 
 Try it out!
@@ -990,11 +997,11 @@ Try it out!
 $ sh deploy.sh
 ```
 
-Once done, create the `books` database, apply the migrations, and seed the database:
+Once done, create the `devops` database, apply the migrations, and seed the database:
 
 ```sh
 $ POD_NAME=$(kubectl get pod -l service=postgres -o jsonpath="{.items[0].metadata.name}")
-$ kubectl exec $POD_NAME --stdin --tty -- createdb -U sample books
+$ kubectl exec $POD_NAME --stdin --tty -- createdb -U postgres devops
 
 $ FLASK_POD_NAME=$(kubectl get pod -l app=flask -o jsonpath="{.items[0].metadata.name}")
 $ kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py recreate_db
@@ -1013,8 +1020,7 @@ Additional Resources:
 
 1. [Learn Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
 1. [Configuration Best Practices](https://kubernetes.io/docs/concepts/configuration/overview/)
-1. [Scaling Flask with Kubernetes](https://mherman.org/presentations/flask-kubernetes)
-1. [Running Flask on Docker Swarm](https://testdriven.io/running-flask-on-docker-swarm) (compare and contrast running Flask on Docker Swarm vs. Kubernetes)
-1. [Deploying a Node App to Google Cloud with Kubernetes](https://testdriven.io/deploying-a-node-app-to-google-cloud-with-kubernetes)
+1. [Deploy and Run an Application in Kubernetes](https://vinaydhegde.github.io/)
 
-You can find the code in the [flask-vue-kubernetes](https://github.com/testdrivenio/flask-vue-kubernetes) repo on GitHub.
+
+You can find the code in the [devops-tree-k8s](https://github.com/vinaydhegde/devops-tree-k8s) repo on GitHub.
