@@ -88,77 +88,59 @@ The basic Kubernetes objects include:
 1. **[Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)** are used to persist data beyond the life of a container. They are especially important for stateful applications like Redis and Postgres.
     - A *[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)* defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
     - A *[PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)* is a request to use the PersistentVolume by a user.
-
-Before diving in, let's look at some of the basic building blocks that you have to work with from the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/):
-
-1. A **[Node](https://kubernetes.io/docs/concepts/architecture/nodes/)** is a worker machine provisioned to run Kubernetes. Each Node is managed by the Kubernetes master.
-
-1. **[Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)** are used to describe the desired state of Kubernetes. They dictate how Pods are created, deployed, and replicated.
-1. **[Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)** are key/value pairs that are attached to resources (like Pods) which are used to organize related resources. You can think of them like CSS selectors. For example:
-    - *Environment* - `dev`, `test`, `prod`
-    - *App version* - `beta`, `1.2.1`
-    - *Type* - `client`, `server`, `db`
-1. **[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)** is a set of routing rules used to control the external access to Services based on the request host or path.
-1. **[Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)** are used to persist data beyond the life of a container. They are especially important for stateful applications like Redis and Postgres.
-    - *[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)* defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
-    - *[PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)* is a request to use the PersistentVolume by a user.
-1. **[Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)**: Kubernetes supports multiple virtual clusters backed by the same physical cluster. These virtual clusters are called namespaces  
-
+1. **[Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)**: Kubernetes supports multiple virtual clusters backed by the same physical cluster. These virtual clusters are called namespaces    
+    
 Kubernetes also contains higher-level abstractions that rely on controllers to build upon the basic objects, and provide additional functionality and convenience features. These include:
 
+1. **[Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)** are used to describe the desired state of Kubernetes. They dictate how Pods are created, deployed, and replicated.
+1. **[DaemonSet](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/)** A DaemonSet ensures that all (or some) Nodes run a copy of a Pod.
+1. **[StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/)**: Manages the deployment and scaling of a set of Pods, and provides guarantees about the ordering and uniqueness of these Pods.
+1. **[ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)**: 
+Before diving in, let's look at some of the basic building blocks that you have to work with from the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/): A ReplicaSet’s purpose is to maintain a stable set of replica Pods running at any given time
+1. **[Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/)**: A Job creates one or more Pods and ensures that a specified number of them successfully terminate
 
-> For more, review the [Learn Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) tutorial.
+Other objects/metadata for te objects include:
+1. **[Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)** Labels are key/value pairs that are attached to objects, such as pods.
+1. **[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)** An API object that manages external access to the services in a cluster, typically HTTP. Ingress may provide load balancing, SSL termination and name-based virtual hosting
+
+Now, It's time to look at the App deployment part, which is the main purpose of this blog.
+
+## App Overview
+**DevopsTree**: Flask + React + Postgres app (currently, it only displays the information. You cannot edit/update).
+It displays major tools & technolgies used in Devops & it's dependencies in a Tree pattern.
+
+
+<img src="/images/k8s/devopstree.gif" style="max-width:80%;padding-bottom:20px;" alt="DevopsTree App">
 
 
 ## Project Setup
 
-Clone down the [devops-tree-k8s](https://github.com/vinaydhegde/devops-tree-k8s) repo, and then build the images and spin up the containers:
+Clone the Github repo: [DevopsTree-Kubernetes](https://github.com/vinaydhegde/DevopsTree-Kubernetes)
 
 ```sh
-$ git clone https://github.com/vinaydhegde/devops-tree-k8s
-$ cd devops-tree-k8s
-$ docker-compose up -d --build
+$ git clone https://github.com/vinaydhegde/DevopsTree-Kubernetes ~/DevopsTree-Kubernetes
 ```
 
-Create and seed the database `devops` table:
-
-```sh
-$ docker-compose exec server python manage.py recreate_db
-$ docker-compose exec server python manage.py seed_db
-```
-
-Test out the below server-side endpoint in your browser of choice:
-
-{% raw %}
-[http://localhost:5001/devops](http://localhost:5001/devops)
-{% endraw %}
-
-Navigate to [http://localhost:8080](http://localhost:8080).
-
-<img src="/assets/img/blog/flask-kubernetes/v1.gif" style="max-width:80%;" alt="devops-tree app">
-
-Take a quick look at the code before moving on:
+Below is the code structure you see when you clone the repo :
 
 ```sh
 ├── README.md
-├── docker-compose.yml
 ├── k8s
-│   ├── flask-deployment.yml
-│   ├── flask-service.yml
-│   ├── minikube-ingress.yml
-│   ├── persistent-volume-claim.yml
-│   ├── persistent-volume.yml
-│   ├── postgres-deployment.yml
-│   ├── postgres-service.yml
-│   ├── secret.yml
-│   ├── react-deployment.yml
-│   └── react-service.yml
+│   ├── devopstree-secret.yml
+│   ├── devopstree-deployment-postgres.yml
+│   ├── devopstree-service-postgres.yml
+│   ├── devopstree-minikube-ingress.yml
+│   ├── devopstree-pv.yml
+│   ├── devopstree-pvc.yml
+│   ├── devopstree-deployment-flask.yml
+│   ├── devopstree-service-flask.yml
+│   ├── devopstree-deployment-react.yml
+│   └── devopstree-service-react.yml
 └── services
     ├── client
     │   ├── Dockerfile
-    │   ├── Dockerfile-minikube
+    │   ├── Dockerfile-k8s
     │   ├── README.md
-    │   ├── build
     │   ├── node_modules
     |   ├── public
     │   ├── package.json
@@ -169,7 +151,7 @@ Take a quick look at the code before moving on:
     │   │   ├── Tree
     │   │       ├── index.js
     ├── db
-    │   ├── create.sql
+    │   ├── create_database.sql
     │   └── dockerfile
     └── server
         ├── dockerfile
@@ -179,7 +161,7 @@ Take a quick look at the code before moving on:
         │   ├── __init__.py
         │   ├── api
         │   │   ├── __init__.py
-        │   │   ├── devops.py
+        │   │   ├── devopstree.py
         │   │   └── models.py
         │   └── config.py
         └── requirements.txt
@@ -188,25 +170,32 @@ Take a quick look at the code before moving on:
 ## Minikube
 
 [Minikube](https://kubernetes.io/docs/setup/minikube/) is a tool which allows developers to use and run a Kubernetes cluster locally. It's a great way to quickly get a cluster up and running so you can start interacting with the Kubernetes API.
+```sh
+# For Ubuntu 
+$ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
 
-Follow the official [quickstart](https://github.com/kubernetes/minikube#quickstart) guide to get Minikube installed along with:
+The command above is to install Minikube on Ubuntu. You can follow the official [quickstart](https://github.com/kubernetes/minikube#quickstart) guide to get Minikube installed for other OS platforms.
+
+Along with this, you also need to install,
 
 1. A [Hypervisor](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-a-hypervisor) (like [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [HyperKit](https://github.com/moby/hyperkit)) to manage virtual machines
+
 1. [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) to deploy and manage apps on Kubernetes
+```sh
+$ curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+$ chmod +x ./kubectl
+$ sudo mv ./kubectl /usr/local/bin/kubectl
+$ kubectl version --client
+```
 
-> If you’re on a Mac, we recommend installing Kubectl, Virtualbox, and Minikube with [Homebrew](https://brew.sh/):
->
-> ```sh
-> $ brew update
-> $ brew install kubectl
-> $ brew cask install virtualbox
-> $ brew cask install minikube
-> ```
-
-Then, start the cluster and pull up the Minikube [dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/):
-
+Start Minikube & create a cluster
 ```sh
 $ minikube start
+```
+
+Access Minikube [dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/):
+```sh
 $ minikube dashboard
 ```
 
