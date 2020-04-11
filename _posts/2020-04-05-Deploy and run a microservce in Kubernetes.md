@@ -698,7 +698,7 @@ devopstree=# select * from devopstree;
 >Note: Here, both database & table name is: devopstree
 
 
-## Ingress: 
+## Ingress: minikube-ingress
 
 To enable traffic to access the Flask API inside the cluster, you can use either a NodePort, LoadBalancer, or Ingress:
 
@@ -708,7 +708,7 @@ To enable traffic to access the Flask API inside the cluster, you can use either
 
 > For more, review the official [Publishing Services](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) guide.
 
-*k8s/minikube-ingress.yml*:
+*k8s/devopstree-minikube-ingress.yml*:
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -723,18 +723,18 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: react
+          serviceName: devopstree-react
           servicePort: 8080
-      - path: /devops
+      - path: /devopstree
         backend:
-          serviceName: flask
+          serviceName: devopstree-flask
           servicePort: 5000
 ```
 
 Here, we defined the following HTTP rules:
 
-1. `/` - routes requests to the React Service (which we still need to set up)
-1. `/devops` - routes requests to the Flask Service
+1. `/` - routes requests to the React Service (which we are going to setup in the coming steps)
+1. `/devopstree` - routes requests to the Flask Service
 
 Enable the Ingress [addon](https://github.com/kubernetes/minikube/tree/master/deploy/addons/ingress):
 
@@ -742,13 +742,13 @@ Enable the Ingress [addon](https://github.com/kubernetes/minikube/tree/master/de
 $ minikube addons enable ingress
 ```
 
-Create the Ingress object:
+Create the Ingress object: 'minikube-ingress'
 
 ```sh
-$ kubectl apply -f ./k8s/minikube-ingress.yml
+$ kubectl apply -f ./k8s/devopstree-minikube-ingress.yml
 ```
 
-Next, you need to update your */etc/hosts* file to route requests from the host we defined, `devops-tree`, to the Minikube instance.
+Update the */etc/hosts* file to route requests from the host we defined, `devops-tree`, to the Minikube instance.
 
 Add an entry to */etc/hosts*:
 
@@ -758,45 +758,22 @@ $ echo "$(minikube ip) devops-tree" | sudo tee -a /etc/hosts
 
 Try it out:
 
-1. http://devops-tree/devops
+1. http://devops-tree/devopstree
 
-    ```json
-    {
-    "name": "Devops",
-    "tooltip": "Devops tree",
-    "children": [
-      {
-        "name": "DBs",
-        "tooltip":"Databases",
-        "children": [
-          {
-            "name": "Oracle DB",
-            "tooltip": "From Oracle"
-          },
-          {
-            "name": "PostgreSql",
-            "tooltip": "open source object-relational database system"
-          },
-          {
-            "name": "MongoDB",
-            "tooltip": "NoSQL database program"
-          }
-        ]
-  
-      },
-    ]
- }
-```
+It should list the JSON elements.
+
 
 ## React
 
-Moving right along, review the React project along with the associated Dockerfiles:
+## Deployment: devopstree-deployment-react
+
+Review the `React` project along with the associated Dockerfiles:
 
 1. "services/client"
 1. */services/client/Dockerfile*
-1. */services/client/Dockerfile-minikube*
+1. */services/client/Dockerfile-k8s*
 
-*k8s/react-deployment.yml*:
+*k8s/devopstree-deployment-react.yml*:
 
 ```yaml
 apiVersion: apps/v1
@@ -804,24 +781,24 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    name: react
-  name: react
+    name: devopstree-react
+  name: devopstree-react
 spec:
   progressDeadlineSeconds: 2147483647
   replicas: 1
   selector:
     matchLabels:
-      app: react
+      app: devopstree-react
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: react
+        app: devopstree-react
     spec:
       containers:
-      - image: vinaydhegde/react-kubernetes:latest
+      - image: vinaydhegde/devopstree-react:latest
         imagePullPolicy: Always
-        name: react
+        name: devopstree-react
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
@@ -832,49 +809,58 @@ spec:
       terminationGracePeriodSeconds: 30
 ```
 
-Again, either use my image or build and push your own image to Docker Hub:
+Again, you can either use my docker image or build your own & push it to Docker Hub:
 
 ```sh
-$ docker build -t <YOUR_DOCKERHUB_NAME>/react-kubernetes ./services/client \
-    -f ./services/client/Dockerfile-minikube
-$ docker push <YOUR_DOCKERHUB_NAME>/react-kubernetes
+$ docker build -t <YOUR_DOCKERHUB_NAME>/devopstree-react ./services/client \
+    -f ./services/client/Dockerfile-k8s
+$ docker push <YOUR_DOCKERHUB_NAME>/devopstree-react
 ```
 
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./k8s/react-deployment.yml
+$ kubectl create -f ./k8s/devopstree-deployment-react.yml
 ```
 
-Verify that a Pod was created along with the Deployment:
+Check whether a Pod is created along with the Deployment:
 
 ```sh
-$ kubectl get deployments react
-NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-react     1         1         1            1           4m
+$ kubectl get deployments devopstree-react
+
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+devopstree-react   1/1     1            1           5m21s
 
 $ kubectl get pods
-NAME                        READY     STATUS    RESTARTS   AGE
-flask-6844c9569-5znvr       1/1       Running   0          5h
-postgres-6fb596d5b-mqmzz    1/1       Running   0          8h
-react-5d56c9549f-jgjhk      1/1       Running   0          9m
+
+NAME                                   READY   STATUS    RESTARTS   AGE
+devopstree-flask-64988ffb68-8v82n      1/1     Running   0          48m
+devopstree-postgres-7bbcc445dc-lrzx9   1/1     Running   0          98m
+devopstree-react-6c8b7c8cc6-t2xsn      1/1     Running   0          5m57s
 ```
 
-> How would you verify that the Pod and Deployment were created successfully in the dashboard?
+> Verify, Pod and Deployment were created successfully in the dashboard.
 
-*k8s/react-service.yml*:
+<img src="/images/k8s/react-deployment.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="react deployment">
+
+<img src="/images/k8s/react-pod.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="react pod">
+
+
+## Service: devopstree-service-react
+
+*k8s/devopstree-service-react.yml*:
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: react
+  name: devopstree-react
   labels:
-    service: react
-  name: react
+    service: devopstree-react
+  name: devopstree-react
 spec:
   selector:
-    app: react
+    app: devopstree-react
   ports:
   - port: 8080
     targetPort: 8080
@@ -883,12 +869,17 @@ spec:
 Create the service:
 
 ```sh
-$ kubectl create -f ./k8s/react-service.yml
+$ kubectl create -f ./k8s/devopstree-service-react.yml
 ```
+<img src="/images/k8s/react-service.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="react service">
 
-Ensure [http://devops-tree/](http://devops-tree/) works as expected.
 
-<img src="/assets/img/blog/flask-kubernetes/bookshelf.png" style="max-width:80%;padding-top:20px;padding-bottom:10px;" alt="devops-tree app">
+Yes, we are DONE.
+
+You can access the app at: [http://devops-tree/](http://devops-tree)
+
+<img src="/images/k8s/devopstree.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="DevopsTree app">
+
 
 ## Scaling
 
@@ -897,43 +888,27 @@ Kubernetes makes it easy to scale, adding additional Pods as necessary, when the
 For example, let's add another Flask Pod to the cluster:
 
 ```sh
-$ kubectl scale deployment flask --replicas=2
+$ kubectl scale deployment devopstree-flask --replicas=2
 ```
 
 Confirm:
 
 ```sh
-$ kubectl get deployments flask
+$ kubectl get deployments devopstree-flask
 
-NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-flask     2         2         2            2           45m
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+devopstree-flask   2/2     2            2           62m
 ```
 
 ```sh
 $ kubectl get pods -o wide
 
-NAME                        READY     STATUS    RESTARTS   AGE       IP           NODE
-flask-6844c9569-5znvr       1/1       Running   0          20s       172.17.0.12  minikube
-flask-6844c9569-4xmws       1/1       Running   0          4h        172.17.0.13  minikube
-postgres-6fb596d5b-mqmzz    1/1       Running   0          9h        172.17.0.3   minikube
-react-5d56c9549f-jgjhk      1/1       Running   0          14m       172.17.0.4   minikube
+NAME                                   READY   STATUS    RESTARTS   AGE     IP            NODE       
+devopstree-flask-64988ffb68-8v82n      1/1     Running   0          63m     172.18.0.7    minikube
+devopstree-flask-64988ffb68-j5drv      1/1     Running   0          2m25s   172.18.0.10   minikube
+devopstree-postgres-7bbcc445dc-lrzx9   1/1     Running   0          112m    172.18.0.6    minikube
+devopstree-react-6c8b7c8cc6-t2xsn      1/1     Running   0          20m     172.18.0.9    minikube
 ```
-
-Make a few requests to the service:
-
-```sh
-$ for ((i=1;i<=10;i++)); do curl http://devops-tree/devops; done
-```
-
-You should see different `container_id`s being returned, indicating that requests are being routed appropriately via a round robin algorithm between the two replicas:
-
-```sh
-{"container_id":"flask-6844c9569-5znvr"}
-{"container_id":"flask-6844c9569-4xmws"}
-{"container_id":"flask-6844c9569-5znvr"}
-```
-
-What happens if you scale down as traffic is hitting the cluster? Open two terminal windows and test this on your on. You should see traffic being re-routed appropriately. Try it again, but this time scale up.
 
 ## Helpful Commands
 
@@ -952,97 +927,5 @@ What happens if you scale down as traffic is hitting the cluster? Open two termi
 | `minikube stop`             | Stops a local Kubernetes cluster                     |
 | `minikube delete`           | Removes a local Kubernetes cluster                   |
 
-> Check out the [Kubernetes Cheatsheet](https://github.com/dennyzhang/cheatsheet-kubernetes-A4) for more commands.
-
-## Automation Script
-
-Ready to put everything together? Let’s write a script that will:
-
-1. Create a PersistentVolume and a PersistentVolumeClaim
-1. Add the database credentials via Kubernetes Secrets
-1. Create the Postgres Deployment and Service
-1. Create the Flask Deployment and Service
-1. Enable Ingress
-1. Apply the Ingress rules
-1. Create the Vue Deployment and Service
 
 
-Add a new file called *deploy.sh* to the project root:
-
-```sh
-#!/bin/bash
-
-
-echo "Creating the volume..."
-
-kubectl apply -f ./k8s/persistent-volume.yml
-kubectl apply -f ./k8s/persistent-volume-claim.yml
-
-
-echo "Creating the database credentials..."
-
-kubectl apply -f ./k8s/secret.yml
-
-
-echo "Creating the postgres deployment and service..."
-
-kubectl create -f ./k8s/postgres-deployment.yml
-kubectl create -f ./k8s/postgres-service.yml
-POD_NAME=$(kubectl get pod -l service=postgres -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME --stdin --tty -- createdb -U postgres devops
-
-
-echo "Creating the flask deployment and service..."
-
-kubectl create -f ./k8s/flask-deployment.yml
-kubectl create -f ./k8s/flask-service.yml
-FLASK_POD_NAME=$(kubectl get pod -l app=flask -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py recreate_db
-kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py seed_db
-
-
-echo "Adding the ingress..."
-
-minikube addons enable ingress
-kubectl apply -f ./k8s/minikube-ingress.yml
-
-
-echo "Creating the React deployment and service..."
-
-kubectl create -f ./k8s/react-deployment.yml
-kubectl create -f ./k8s/react-service.yml
-```
-
-Try it out!
-
-```sh
-$ sh deploy.sh
-```
-
-Once done, create the `devops` database, apply the migrations, and seed the database:
-
-```sh
-$ POD_NAME=$(kubectl get pod -l service=postgres -o jsonpath="{.items[0].metadata.name}")
-$ kubectl exec $POD_NAME --stdin --tty -- createdb -U postgres devops
-
-$ FLASK_POD_NAME=$(kubectl get pod -l app=flask -o jsonpath="{.items[0].metadata.name}")
-$ kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py recreate_db
-$ kubectl exec $FLASK_POD_NAME --stdin --tty -- python manage.py seed_db
-```
-
-Update */etc/hosts*, and then test it out in the browser.
-
-## Conclusion
-
-In this post we looked at how to run a Flask-based microservice on Kubernetes.
-
-At this point, you should have a basic understanding of how Kubernetes works and be able to deploy a cluster with an app running on it.
-
-Additional Resources:
-
-1. [Learn Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
-1. [Configuration Best Practices](https://kubernetes.io/docs/concepts/configuration/overview/)
-1. [Deploy and Run an Application in Kubernetes](https://vinaydhegde.github.io/)
-
-
-You can find the code in the [devops-tree-k8s](https://github.com/vinaydhegde/devops-tree-k8s) repo on GitHub.
