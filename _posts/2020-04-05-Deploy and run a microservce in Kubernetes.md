@@ -307,7 +307,7 @@ spec:
   storageClassName: standard
 ```
 
-## Create the volume claim: dp-pvc
+## Volume Claim: dp-pvc
 
 ```sh
 $ kubectl apply -f ./k8s/devopstree-pvc.yml
@@ -450,6 +450,8 @@ NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
 devopstree-postgres   0/1     1            0           17s
 ```
 
+## Service: devopstree-service-postgres
+
 *k8s/devopstree-service-postgres.yml*:
 
 ```yaml
@@ -479,57 +481,81 @@ Let's understand what the above configuration does:
         - `port` defines the port exposed to the cluster
 
 
-> Take a moment to go back to the Deployment spec. How does the `selector` in the Service relate back to the Deployment?
+> Note: `selector` in the above Service configuration, refers to the Deployment we created earlier. Here, we have set the same name for both deployment & service. But it can be different.
 
 Since the [Service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) is `ClusterIP`, it's not exposed externally, so it's *only* accessible from within the cluster by other objects.
 
 Create the service:
 
 ```sh
-$ kubectl create -f ./k8s/postgres-service.yml
+$ kubectl create -f ./k8s/devopstree-service-postgres.yml
 ```
 
-Create the `devops` database, using the Pod name:
+Create a postgres database called`devopstree`, using the Pod name:
 
 ```sh
 $ kubectl get pods
 
-NAME                        READY     STATUS    RESTARTS   AGE
-postgres-6fb596d5b-mqmzz    1/1       Running   0          6m
+NAME                                   READY   STATUS    RESTARTS   AGE
+devopstree-postgres-7bbcc445dc-lrzx9   1/1     Running   0          24m
 
-$ kubectl exec postgres-6fb596d5b-mqmzz --stdin --tty -- createdb -U postgres devops
+$ kubectl exec devopstree-postgres-7bbcc445dc-lrzx9 --stdin --tty -- createdb -U devopstree-demo devopstree
 ```
+>Note: Here, `devopstree-demo` is the user name which we login to postgres DB.
+'devopstree' is the postgres DB name.
 
 Verify the creation:
 
 ```sh
-kubectl exec postgres-6fb596d5b-mqmzz --stdin --tty -- psql -U sample devops
+kubectl exec devopstree-postgres-7bbcc445dc-lrzx9 --stdin --tty -- psql -U devopstree-demo devopstree
 
-psql (10.4)
+psql (12.2)
 Type "help" for help.
 
 postgress=# \l
-                                 List of databases
-   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
------------+----------+----------+------------+------------+-----------------------
- devops    | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+                                                List of databases
+      Name       |      Owner      | Encoding |  Collate   |   Ctype    |            Access privileges            
+-----------------+-----------------+----------+------------+------------+-----------------------------------------
+ devopstree      | devopstree-demo | UTF8     | en_US.utf8 | en_US.utf8 | 
+ devopstree-demo | devopstree-demo | UTF8     | en_US.utf8 | en_US.utf8 | 
+ postgres        | devopstree-demo | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0       | devopstree-demo | UTF8     | en_US.utf8 | en_US.utf8 | =c/"devopstree-demo"                   +
+                 |                 |          |            |            | "devopstree-demo"=CTc/"devopstree-demo"
+ template1       | devopstree-demo | UTF8     | en_US.utf8 | en_US.utf8 | =c/"devopstree-demo"                   +
+                 |                 |          |            |            | "devopstree-demo"=CTc/"devopstree-demo"
+(5 rows)
 
-postgres=#
+postgres=# \q
 ```
-
-> You can also get the Pod name via:
+> You can also get the Pod name using the command:
 >
 > ```sh
-> $ kubectl get pod -l service=postgres -o jsonpath="{.items[0].metadata.name}"
+> $ kubectl get pod -l service=devopstree-postgres -o jsonpath="{.items[0].metadata.name}"
 > ```
 >
 > Assign the value to a variable and then create the database:
 > ```sh
-> $ POD_NAME=$(kubectl get pod -l service=postgres -o jsonpath="{.items[0].metadata.name}")
-> $ kubectl exec $POD_NAME --stdin --tty -- createdb -U postgres devops
+> $ POD_NAME=$(kubectl get pod -l service=devopstree-postgres -o jsonpath="{.items[0].metadata.name}")
+> $ kubectl exec $POD_NAME --stdin --tty -- createdb -U devopstree-demo devopstree
 > ```
 
+```sh
+$ kubectl get service
+
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+devopstree-postgres   ClusterIP   10.100.166.248   <none>        5432/TCP   14m
+kubernetes            ClusterIP   10.96.0.1        <none>        443/TCP    151m
+
+$ kubectl get deployments
+
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+devopstree-postgres   1/1     1            1           40m
+```
+
+
 ## Flask
+
+## Deployment: devopstree-deployment-flask
 
 Take a moment to review the Flask project structure along with the *dockerfile* and the *entrypoint.sh* files:
 
@@ -537,7 +563,7 @@ Take a moment to review the Flask project structure along with the *dockerfile* 
 1. *services/server/dockerfile*
 1. *services/server/entrypoint.sh*
 
-*k8s/flask-deployment.yml*:
+*k8s/devopstree-deployment-flask.yml*:
 
 ```yaml
 apiVersion: apps/v1
@@ -545,19 +571,19 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    name: flask
-  name: flask
+    name: devopstree-flask
+  name: devopstree-flask
 spec:
   progressDeadlineSeconds: 2147483647
   replicas: 1
   selector:
     matchLabels:
-      app: flask
+      app: devopstree-flask
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: flask
+        app: devopstree-flask
     spec:
       containers:
       - env:
@@ -575,7 +601,7 @@ spec:
             secretKeyRef:
               key: password
               name: postgres-credentials
-        image: vinaydhegde/flask-kubernetes:latest
+        image: vinaydhegde/devopstree-flask:latest
         imagePullPolicy: Always
         name: flask
         resources: {}
@@ -588,86 +614,91 @@ spec:
       terminationGracePeriodSeconds: 30
 ```
 
-This should look similar to the Postgres Deployment spec. The big difference is that you can either use my pre-built and pre-pushed image on [Docker Hub](https://hub.docker.com/), `vinaydhegde/flask-kubernetes`, or build and push your own.
+This is similar to the Postgres Deployment spec. The major difference here is that, we are using my pre-built & pre-pushed image on [Docker Hub](https://hub.docker.com/), `vinaydhegde/flask-kubernetes`, or build and push your own.
 
 For example:
 
 ```sh
-$ docker build -t <YOUR_DOCKER_HUB_NAME>/flask-kubernetes ./services/server
-$ docker push <YOUR_DOCKER_HUB_NAME>/flask-kubernetes
+$ docker build -t <YOUR_DOCKER_HUB_NAME>/devopstree-flask ./services/server
+$ docker push <YOUR_DOCKER_HUB_NAME>/devopstree-flask
 ```
 
-If you use your own, make sure you replace `vinaydhegde` with your Docker Hub name in *k8s/flask-deployment.yml* as well.
+If you use your own, make sure you replace `vinaydhegde` with your Docker Hub name in *k8s/devopstree-deployment-flask.yml* as well.
 
-> Alternatively, if don't want to push the image to a Docker registry, after you build the image locally, you can set the `image-pull-policy` flag to `Never` to always use the local image.
+> Note: if you don't want to push the image to a Docker registry, after you build the image locally, you can set the `image-pull-policy` flag to `Never` to always use the local image.
 
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./k8s/flask-deployment.yml
+$ kubectl create -f ./k8s/devopstree-deployment-flask.yml
 ```
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pg-deployments.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
+
+<img src="/images/k8s/flask-deployment.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="falsk deployment">
 
 This will immediately spin up a new Pod:
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pg-pod.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
+<img src="/images/k8s/flask-pod.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="falsk deployment">
 
-*kubernetes/flask-service.yml*:
+## Service: devopstree-service-flask
+
+*kubernetes/devopstree-service-flask.yml*:
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: flask
+  name: devopstree-flask
   labels:
-    service: flask
+    service: devopstree-flask
 spec:
   selector:
-    app: flask
+    app: devopstree-flask
   ports:
   - port: 5000
     targetPort: 5000
 ```
 
-> Curious about the `targetPort` and how it relates to the `port`? Review the offical [Services](https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service) guide.
+> To understand about the `targetPort` and how it relates to the `port`, refer [Services](https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service) guide.
 
 Create the service:
 
 ```sh
-$ kubectl create -f ./k8s/flask-service.yml
+$ kubectl create -f ./k8s/devopstree-service-flask.yml
 ```
 
-Make sure the Pod is associated with the Service:
+Now, check whether the Pod you created through deployment is associated with the Service:
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pg-service.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
+<img src="/images/k8s/flask-service-with-pod.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="service & pod">
 
-Apply the migrations and seed the database:
+Apply the migrations and bootsrap the database:
 
 ```sh
 $ kubectl get pods
 
-NAME                        READY     STATUS    RESTARTS   AGE
-flask-6844c9569-5znvr       1/1       Running   0          28m
-postgres-6fb596d5b-mqmzz    1/1       Running   0          40m
+NAME                                   READY   STATUS    RESTARTS   AGE
+devopstree-flask-64988ffb68-8v82n      1/1     Running   0          12m
+devopstree-postgres-7bbcc445dc-lrzx9   1/1     Running   0          62m
 ```
 
 ```h
-$ kubectl exec flask-6844c9569-5znvr --stdin --tty -- python manage.py recreate_db
-$ kubectl exec flask-6844c9569-5znvr --stdin --tty -- python manage.py seed_db
+$ kubectl exec devopstree-flask-64988ffb68-8v82n --stdin --tty -- python manage.py recreate_db
+$ kubectl exec devopstree-flask-64988ffb68-8v82n --stdin --tty -- python manage.py bootstrap_db
 ```
 
 Verify:
 
 ```sh
-$ kubectl exec postgres-6fb596d5b-mqmzz --stdin --tty -- psql -U postgres
+$ kubectl exec devopstree-postgres-7bbcc445dc-lrzx9 --stdin --tty -- psql -U devopstree-demo
 
-postgres=# \c devops
-You are now connected to database "devops" as user "postgres".
-devops=# select * from devops;
+devopstree-demo=# \c devopstree
+You are now connected to database "devopstree" as user "devopstree-demo".
+devopstree=# select * from devopstree;
 ```
+>Note: Here, both database & table name is: devopstree
 
-## Ingress
+
+## Ingress: 
 
 To enable traffic to access the Flask API inside the cluster, you can use either a NodePort, LoadBalancer, or Ingress:
 
