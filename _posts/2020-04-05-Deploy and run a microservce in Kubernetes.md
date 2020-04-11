@@ -70,6 +70,10 @@ There's also a number of Kubernetes services offered by deifferent vendors
 Kubernetes is a portable, extensible, open-source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation.
 The name Kubernetes originates from Greek, meaning helmsman or pilot. Google open-sourced the Kubernetes project in 2014
 
+## Kubernetes Components
+<img src="../images/k8s/kubernetes-components.png" style="max-width:80%;padding-bottom:20px;" alt="Kubernetes Components">
+
+
 ## Kubernetes Concepts
 
 Before diving in, let's look at some of the basic building blocks that you have to work with from the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/):
