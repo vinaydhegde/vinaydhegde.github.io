@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Deploy and Run an Application in Kubernetes"
+title: "Deploy and Run a microservice in Kubernetes"
 date: 2020-04-05
 ---
 
