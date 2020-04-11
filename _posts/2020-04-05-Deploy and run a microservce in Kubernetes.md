@@ -99,7 +99,7 @@ Kubernetes also contains higher-level abstractions that rely on controllers to b
 Before diving in, let's look at some of the basic building blocks that you have to work with from the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/): A ReplicaSet’s purpose is to maintain a stable set of replica Pods running at any given time
 1. **[Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/)**: A Job creates one or more Pods and ensures that a specified number of them successfully terminate
 
-Other objects/metadata for te objects include:
+Other objects/metadata for the objects include:
 1. **[Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)** Labels are key/value pairs that are attached to objects, such as pods.
 1. **[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)** An API object that manages external access to the services in a cluster, typically HTTP. Ingress may provide load balancing, SSL termination and name-based virtual hosting
 
@@ -199,22 +199,11 @@ Access Minikube [dashboard](https://kubernetes.io/docs/tasks/access-application-
 $ minikube dashboard
 ```
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard1.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
+<img src="/images/k8s/minikube-dashboard.png" style="max-width:80%;padding-bottom:20px;" alt="Minikube Dashboard">
 
-> It's worth noting that the config files will be located in the *~/.kube* directory while all the virtual machine bits will be in the *~/.minikube* directory.
+> Note: Config files will be located in the *~/.kube* directory and all the virtual machine bits will be in the *~/.minikube* directory.
 
-Now we can start creating objects via the Kubernetes API.
-
-> If you run into problems with Minikube, it's often best to remove it completely and start over. For example:
->
->  ```sh
->  $ minikube stop; minikube delete
->  $ rm /usr/local/bin/minikube
->  $ rm -rf ~/.minikube
->  # re-download minikube
->  $ minikube start
->  ```
->
+Now let's start creating objects via the Kubernetes API.
 
 ## Creating Objects
 
@@ -224,22 +213,20 @@ To create a new [object](https://kubernetes.io/docs/concepts/overview/working-wi
 Example:
 
 ```yaml
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask
+  name: devopstree-react
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: flask
+        app: devopstree-react
     spec:
       containers:
-      - name: flask
-        image: vinaydhegde/flask-kubernetes:latest
-        ports:
-        - containerPort: 5000
+      - name: devopstree-react
+      - image: vinaydhegde/devopstree-react:latest
 ```
 
 Required Fields:
@@ -249,17 +236,17 @@ Required Fields:
 1. `metadata` - info about the object so that it can be uniquely identified
 1. `spec` - desired state of the object
 
-In the above example, this spec will create a new Deployment for a Flask app with a single replica (Pod). Take note of the `containers` section. Here, we specified the Docker image along with the container port the application will run on.
+In the above example, this spec will create a new Deployment called *devopstree-react* with a single replica (Pod). Take note of the `containers` section. Here, we specified the Docker image to pull from the docker registry.
 
-In order to run our app, we'll need to set up the following objects:
+We are going to create the following objects in Kubernetes:
 
-<img src="/assets/img/blog/flask-kubernetes/kubernetes-objects.png" style="max-width:80%;padding-bottom:20px;" alt="objects">
+<img src="/images/k8s/objects.png" style="max-width:80%;padding-bottom:20px;" alt="objects">
 
-## Volume
+## Volume: db-pv
 
-Again, since containers are ephemeral, we need to configure a volume, via a [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistent-volumes) and a [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims), to store the Postgres data outside of the Pod.
+As, containers are ephemeral, we need to configure a volume, via a [PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistent-volumes) and a [PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims), to store the Postgres data outside of the Pod.
 
-Take note of the YAML file in *k8s/persistent-volume.yml*:
+Take note of the YAML file in *k8s/devopstree-pv.yml*:
 
 ```yaml
 apiVersion: v1
@@ -280,32 +267,28 @@ spec:
 
 This configuration will create a [hostPath](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath) PersistentVolume at "/data/db-pv" within the Node. The size of the volume is 2 gibibytes with an access mode of [ReadWriteOnce](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), which means that the volume can be mounted as read-write by a single node.
 
-> It's worth noting that Kubernetes only supports using a hostPath on a single-node cluster.
+> Note: Kubernetes only supports using a hostPath on a single-node cluster.
 
 Create the volume:
 
 ```sh
-$ kubectl apply -f ./k8s/persistent-volume.yml
+$ kubectl apply -f ./k8s/devopstree-pv.yml
 ```
 
 View details:
 
 ```sh
 $ kubectl get pv
+
+NAME    CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+db-pv   2Gi        RWO            Retain           Available           standard                5s
 ```
 
-You should see:
+You can also see this object in the dashboard:
 
-```sh
-NAME         CAPACITY  ACCESS MODES  RECLAIM POLICY  STATUS     CLAIM    STORAGECLASS  REASON   AGE
-db-pv        2Gi       RWO           Retain          Available           standard               26s
-```
+<img src="/images/k8s/pv.png" style="max-width:80%;padding-bottom:20px;" alt="peristent-volume">
 
-You should also see this object in the dashboard:
-
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard2.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard Image">
-
-*k8s/persistent-volume-claim.yml*:
+*k8s/devopstree-pvc.yml*:
 
 ```yaml
 apiVersion: v1
@@ -324,10 +307,10 @@ spec:
   storageClassName: standard
 ```
 
-Create the volume claim:
+## Create the volume claim: dp-pvc
 
 ```sh
-$ kubectl apply -f ./k8s/persistent-volume-claim.yml
+$ kubectl apply -f ./k8s/devopstree-pvc.yml
 ```
 
 View details:
@@ -335,17 +318,17 @@ View details:
 ```sh
 $ kubectl get pvc
 
-NAME           STATUS    VOLUME        CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-db-pvc         Pending   db-pv         0                         standard       7s
+NAME     STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+db-pvc   Pending   db-pv    0                         standard       9s
 ```
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-pvc.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard Image">
+<img src="/images/k8s/pvc.png" style="max-width:80%;padding-bottom:20px;" alt="peristent-volume-claim">
 
-## Secrets
+## Secrets: postgres-credentials
 
 [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) are used to handle sensitive info such as passwords, API tokens, and SSH keys. We'll set up a Secret to store our Postgres database credentials.
 
-*k8s/secret.yml*:
+*k8s/devopstree-secret.yml*:
 
 ```yaml
 apiVersion: v1
@@ -354,32 +337,35 @@ metadata:
   name: postgres-credentials
 type: Opaque
 data:
-  user: cG9zdGdyZXM=
-  password: bXlwb3N0Z3Jlcw==
+  user: ZGV2b3BzdHJlZS1kZW1v
+  password: ZGVtb0AxMjM=
 ```
 
 The `user` and `password` fields are base64 encoded strings ([security via obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity)):
 
+For example:
 ```sh
-$ echo -n "something" | base64
-c29tZXRoaW5nCg==
+$ echo -n "<your_password_to_encode>" | base64
+eW91cl9wYXNzd29yZF90b19lbmNvZGU=
 ```
 
-> Keep in mind that any user with access to the cluster will be able to read the values in plaintext. Use `vault` if you want to encrypt secrets in transit and at rest.
+> Note: Any user with access to the cluster will be able to read the values in plaintext. Use `vault` if you want to encrypt secrets in transit and at rest.
 
 Add the Secrets object:
 
 ```sh
-$ kubectl apply -f ./k8s/secret.yml
+$ kubectl apply -f ./k8s/devopstree-secret.yml
 ```
 
-<img src="/assets/img/blog/flask-kubernetes/minikube-dashboard-secrets.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="minikube dashboard">
+<img src="/images/k8s/secret.png" style="max-width:80%;padding-bottom:20px;" alt="Secret object">
 
-## Postgres
+## POSTGRES
+
+## Deployment: devopstree-deployment-postgres
 
 With the volume and database credentials set up in the cluster, we can now configure the Postgres database itself.
 
-*k8s/postgres-deployment.yml*:
+*k8s/devopstree-deployment-postgres.yml*:
 
 ```yaml
 apiVersion: apps/v1
@@ -388,22 +374,22 @@ metadata:
   creationTimestamp: null
   labels:
     name: database
-  name: postgres
+  name: devopstree-postgres
 spec:
   progressDeadlineSeconds: 2147483647
   replicas: 1
   selector:
     matchLabels:
-      service: postgres
+      service: devopstree-postgres
   template:
     metadata:
       creationTimestamp: null
       labels:
-        service: postgres
+        service: devopstree-postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:12.1-alpine
+      - name: devopstree-postgres
+        image: postgres:12.2-alpine
         env:
           - name: POSTGRES_USER
             valueFrom:
@@ -426,32 +412,33 @@ spec:
       volumes:
       - name: postgres-volume-mount
         persistentVolumeClaim:
-          claimName: db-pvc
+          claimName: db-pvcc
 ```
 
-What's happening here?
+Let's understand what the above configuration does:
 
 1. `metadata`
-    - The `name` field defines the Deployment name - `postgres`
+    - The `name` field defines the Deployment name - `devopstree-postgres`
     - `labels` define the labels for the Deployment - `name: database`
 1. `spec`
     - `replicas` define the number of Pods to run - `1`
     - `template`
         - `metadata`
-            - `labels` indicate which labels should be assigned to the Pod - `service: postgres`
+            - `labels` indicate which labels should be assigned to the Pod - `service: devopstree-postgres`
         - `spec`
             - `containers` define the containers associated with each Pod
             - `volumes` define the volume claim - `postgres-volume-mount`
             - `restartPolicy` defines the [restart policy](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) - `Always`
 
-Further, the Pod name is `postgres` and the image is `postgres:10.4-alpine`, which will be pulled from Docker Hub. The database credentials, from the Secret object, are passed in as well.
+Here, the Pod name is also `devopstree-postgres` but it can be different than the service name (You will see name prefix *devopstree* in many places in almost all configuration files. So don't get confused). 
+The docker image name is `postgres:12.2-alpine`, which will be pulled from Docker Hub. The database credentials, from the Secret object, are passed in as well.
 
 Finally, when applied, the volume claim will be mounted into the Pod. The claim is mounted to "/var/lib/postgresql/data" - the default location - while the data will be stored in the PersistentVolume, "/data/db-pv".
 
 Create the Deployment:
 
 ```sh
-$ kubectl create -f ./k8s/postgres-deployment.yml
+$ kubectl create -f ./k8s/devopstree-deployment-postgres.yml
 ```
 
 Status:
@@ -459,34 +446,34 @@ Status:
 ```sh
 $ kubectl get deployments
 
-NAME       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-postgres   1         1         1            1           30s
+NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+devopstree-postgres   0/1     1            0           17s
 ```
 
-*k8s/postgres-service.yml*:
+*k8s/devopstree-service-postgres.yml*:
 
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: devopstree-postgres
   labels:
-    service: postgres
+    service: devopstree-postgres
 spec:
   selector:
-    service: postgres
+    service: devopstree-postgres
   type: ClusterIP
   ports:
   - port: 5432
 ```
 
-What's happening here?
+Let's understand what the above configuration does:
 
 1. `metadata`
-    - The `name` field defines the Service name - `postgres`
+    - The `name` field defines the Service name - `devopstree-postgres`
     - `labels` define the labels for the Service - `name: database`
 1. `spec`
-    - `selector` defines the Pod label and value that the Service applies to - `service: postgres`
+    - `selector` defines the Pod label and value that the Service applies to - `service: devopstree-postgres`
     - `type` defines the [type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) of Service - `ClusterIP`
     - `ports`
         - `port` defines the port exposed to the cluster
