@@ -70,19 +70,29 @@ There's also a number of Kubernetes services offered by deifferent vendors
 Kubernetes is a portable, extensible, open-source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation.
 The name Kubernetes originates from Greek, meaning helmsman or pilot. Google open-sourced the Kubernetes project in 2014
 
-## Understanding the architecture of Kubernetes (Components of Kubernetes)
-- The *master* node, which hosts the *Kubernetes Control Plane* that controls and managaes the whole Kubernetes system 
-- Worker *nodes* that run the actual applications you deploy
+## Kubernetes Architecture (Components of Kubernetes)
+- The *master* node, which hosts the *Kubernetes Control Plane* that controls and managaes the whole Kubernetes system.
+ It runs 3 processes: kube-apiserver, kube-controller-manager and kube-scheduler.
+- Worker *nodes* that run the actual applications you deploy. It runs 2 processes: kubelet (which communicates with  the Kuberenetes master) and kube-proxy.
+
+
 <img src="/images/k8s/kubernetes-components.png" style="max-width:80%;padding-bottom:20px;" alt="Kubernetes Components">
 To knowmore about each component, refer: https://kubernetes.io/docs/concepts/overview/components/
 
 ## Kubernetes Concepts
+To work with Kubernetes, you use *Kubernetes API objects* to describe your cluster’s desired state: what applications or other workloads you want to run, what container images they use, the number of replicas, what network and disk resources you want to make available, and more. You set your desired state by creating objects using the Kubernetes API, typically via the command-line interface, *kubectl*
+
+The basic Kubernetes objects include:
+1. **[Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/)** is a logical, tightly-coupled group of application containers that run on a Node. Containers in a Pod are deployed together and share resources (like data volumes and network addresses). Multiple Pods can run on a single Node.
+1. **[Service](https://kubernetes.io/docs/concepts/services-networking/service/)** is a logical set of Pods that perform a similar function. It enables load balancing and service discovery. It's an abstraction layer over the Pods; Pods are meant to be ephemeral while services are much more persistent.
+1. **[Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)** are used to persist data beyond the life of a container. They are especially important for stateful applications like Redis and Postgres.
+    - A *[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)* defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
+    - A *[PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)* is a request to use the PersistentVolume by a user.
 
 Before diving in, let's look at some of the basic building blocks that you have to work with from the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/):
 
 1. A **[Node](https://kubernetes.io/docs/concepts/architecture/nodes/)** is a worker machine provisioned to run Kubernetes. Each Node is managed by the Kubernetes master.
-1. A **[Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/)** is a logical, tightly-coupled group of application containers that run on a Node. Containers in a Pod are deployed together and share resources (like data volumes and network addresses). Multiple Pods can run on a single Node.
-1. A **[Service](https://kubernetes.io/docs/concepts/services-networking/service/)** is a logical set of Pods that perform a similar function. It enables load balancing and service discovery. It's an abstraction layer over the Pods; Pods are meant to be ephemeral while services are much more persistent.
+
 1. **[Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)** are used to describe the desired state of Kubernetes. They dictate how Pods are created, deployed, and replicated.
 1. **[Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)** are key/value pairs that are attached to resources (like Pods) which are used to organize related resources. You can think of them like CSS selectors. For example:
     - *Environment* - `dev`, `test`, `prod`
@@ -90,8 +100,12 @@ Before diving in, let's look at some of the basic building blocks that you have 
     - *Type* - `client`, `server`, `db`
 1. **[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)** is a set of routing rules used to control the external access to Services based on the request host or path.
 1. **[Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)** are used to persist data beyond the life of a container. They are especially important for stateful applications like Redis and Postgres.
-    - A *[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)* defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
-    - A *[PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)* is a request to use the PersistentVolume by a user.
+    - *[PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)* defines a storage volume independent of the normal Pod-lifecycle. It's managed outside of the particular Pod that it resides in.
+    - *[PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims)* is a request to use the PersistentVolume by a user.
+1. **[Namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)**: Kubernetes supports multiple virtual clusters backed by the same physical cluster. These virtual clusters are called namespaces  
+
+Kubernetes also contains higher-level abstractions that rely on controllers to build upon the basic objects, and provide additional functionality and convenience features. These include:
+
 
 > For more, review the [Learn Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) tutorial.
 
