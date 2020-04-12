@@ -4,7 +4,7 @@ title: "Deploy and Run a microservice in Kubernetes"
 date: 2020-04-05
 ---
 
-In this blog, I have tried to explain the basics of Kubernetes & Container Orchestration in gneral and then explained how to deploy a Flask-based microservice (along with Postgres and React.js) to a Kubernetes cluster.
+This blog covers the little basics of Kubernetes & Container Orchestration in general and then details out how to deploy a Flask-based microservice (along with Postgres and React.js) to a Kubernetes cluster.
 
 Dependencies:
 
@@ -22,8 +22,8 @@ Dependencies:
 
 1. Understand what is container orchestration
 1. Pros and cons of using Kubernetes over other orchestration tools like Docker Swarm and Elastic Container Service (ECS)
-1. Kubernetes primitives - Node, Pod, Service, Label, Deployment, Ingress, and Volume
-1. Spin up a Flask-based microservice locally with Docker Compose
+1. Kubernetes Architecture
+1. Kubernetes Objects - Pod, Service, Volumes, Namespace etc.
 1. Configure a Kubernetes cluster to run locally with Minikube
 1. Use Kubernetes Secrets to manage sensitive information
 1. Set up a volume to hold Postgres data within a Kubernetes cluster
@@ -874,7 +874,7 @@ $ kubectl create -f ./k8s/devopstree-service-react.yml
 <img src="/images/k8s/react-service.png" style="max-width:80%;padding-top:20px;padding-bottom:20px;" alt="react service">
 
 
-Yes, we are DONE.
+Yes.. finally! we are DONE.
 
 You can access the app at: [http://devops-tree/](http://devops-tree)
 
