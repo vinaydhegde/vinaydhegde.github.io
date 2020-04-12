@@ -94,13 +94,11 @@ footer ul li {
 display: inline; 
     clear: both;
     position: relative;
-    height: 200px;
+    height: 200px;  
     margin-top: -200px;
-    margin-right: 20px;
-
-  
-
-   
+  text-align: right;
+  float: right;
+    margin-left: 20px;
 }
 
 
