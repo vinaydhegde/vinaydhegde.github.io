@@ -96,9 +96,9 @@ display: inline;
     position: relative;
     height: 200px;  
     margin-top: -200px;
-  text-align: right;
+  /*text-align: right;
   float: right;
-    margin-left: 20px;
+    margin-left: 20px;*/
 }
 
 
