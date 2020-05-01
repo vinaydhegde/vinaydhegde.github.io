@@ -4,7 +4,7 @@ title: "Deploy and Run a microservice in Kubernetes"
 date: 2020-04-05
 ---
 
-This blog covers the little basics of Kubernetes & Container Orchestration in general and then details out how to deploy a Flask-based microservice (along with Postgres and React.js) to a Kubernetes cluster.
+This blog covers basics of Kubernetes & Container Orchestration in general and then details out how to deploy a Flask-based microservice (along with Postgres and React.js) to a Kubernetes cluster.
 
 Dependencies:
 
