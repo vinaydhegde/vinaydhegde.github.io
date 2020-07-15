@@ -1,1 +1,3 @@
-theme: jekyll-theme-slate
+name: Vinay Hegde
+markdown: kramdown
+permalink: /blog/:year/:month/:day/:title
