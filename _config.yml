@@ -34,7 +34,7 @@ words_per_minute         : 200
 comments:
   provider               : disqus #"disqus" #false (default), "disqus", "discourse", "facebook", "staticman", "staticman_v2", "utterances", "custom"
   disqus:
-    shortname            : cross-validated # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
+    shortname            : vinay-hegde # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
   discourse:
     server               : #https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 # , e.g.: meta.discourse.org
   facebook               : #https://developers.facebook.com/docs/plugins/comments
@@ -128,7 +128,7 @@ author:
       # url: "https://facebook.com/"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/vinview/"
+      url: "https://github.com/vinaydhegde/"
     - label: "Linkedin"
       icon: "fab fa-fw fa-linkedin"
       url: "https://linkedin.com/in/vinay-hegde-728176121/"
