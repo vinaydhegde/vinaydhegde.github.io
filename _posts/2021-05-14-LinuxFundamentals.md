@@ -11,227 +11,227 @@ header:
   teaser: /assets/images/nature.jpg
 excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ---
-### Introduction
+## Introduction
 
-## Linux Distributions
+### Linux Distributions
 
-## Linux File System Hierarchy
+### Linux File System Hierarchy
 
 
-### Using Essential tools
+## Using Essential tools
 
-## Some basic commands
+### Some basic commands
 
-## Getting help with `man`
+### Getting help with `man`
 
 
-### Essential File Management Tools
+## Essential File Management Tools
 
-## Listing files with `ls`
+### Listing files with `ls`
 
-## Using wildcards
+### Using wildcards
 
-## Copying files with `cp`
+### Copying files with `cp`
 
-## Working with directories
+### Working with directories
 
-## Using absolute and relative paths
+### Using absolute and relative paths
 
-## Moving files with `mv`
+### Moving files with `mv`
 
-## Removing files with `rm`
+### Removing files with `rm`
 
-## Understanding HardLinks and SymbolicLinks
+### Understanding HardLinks and SymbolicLinks
 
-## Finding files with `find`
+### Finding files with `find`
 
-## Using advance `find` options
+### Using advance `find` options
 
-## Archiving files with `tar`
+### Archiving files with `tar`
 
-## Managing file compression
+### Managing file compression
 
 
-### Working with Text Files
+## Working with Text Files
 
-## Understanding `vi`
+### Understanding `vi`
 
-## Creating text files with `vi`
+### Creating text files with `vi`
 
-## Browsing text files with `more` and `less`
+### Browsing text files with `more` and `less`
 
-## Using `head` and `tail` to see file start and end
+### Using `head` and `tail` to see file start and end
 
-## Displaying file contents with `cat` and `tac`
+### Displaying file contents with `cat` and `tac`
 
-## Working with `grep`
+### Working with `grep`
 
-## Understanding regular expression
+### Understanding regular expression
 
-## Using regular expression with `grep`
+### Using regular expression with `grep`
 
-## Using common text processing utilities
+### Using common text processing utilities
 
-## Using `su`
+### Using `su`
 
-## Using `sudo`
+### Using `sudo`
 
-## Creating simple sudo configuration
+### Creating simple sudo configuration
 
 
 
-### Connecting to a Server
+## Connecting to a Server
 
-## Using `SSH` to connect to remote server
+### Using `SSH` to connect to remote server
 
 
-### Working with Bash Shell
+## Working with Bash Shell
 
-## Understanding the shell and other core linux components
+### Understanding the shell and other core linux components
 
-## Using I/O redirection and piping
+### Using I/O redirection and piping
 
-## Working with `history`
+### Working with `history`
 
-## Using command line completion
+### Using command line completion
 
-## Using variables
+### Using variables
 
-## Using other bash features
+### Using other bash features
 
-## Working with Bash startup files
+### Working with Bash startup files
 
 
-### User and Group Management
+## User and Group Management
 
-## Understanding users
+### Understanding users
 
-## Understanding file ownership
+### Understanding file ownership
 
-## Creating users with `useradd`
+### Creating users with `useradd`
 
-## Creating groups with `groupadd`
+### Creating groups with `groupadd`
 
-## Managing users and groups properties
+### Managing users and groups properties
 
-## Configuring defaults for new users
+### Configuring defaults for new users
 
-## Managing password properties
+### Managing password properties
 
-## Understanding users and group configuration files
+### Understanding users and group configuration files
 
-## Managing current sessions
+### Managing current sessions
 
 
-### Permissions Management
+## Permissions Management
 
-## Understanding and managing basic Linux permissions
+### Understanding and managing basic Linux permissions
 
-## Understanding and managing advance Linux permissions
+### Understanding and managing advance Linux permissions
 
-## Managing `umask`
+### Managing `umask`
 
 
-### Storage Management Essentials
+## Storage Management Essentials
 
-## Understanding Linux storage solutions
+### Understanding Linux storage solutions
 
-## Understanding MBR and GBT partitions
+### Understanding MBR and GBT partitions
 
-## Creating file systems
+### Creating file systems
 
-## Mounting file systems
+### Mounting file systems
 
 
-### Managing Networking
+## Managing Networking
 
-## Understanding IPV4 basics
+### Understanding IPV4 basics
 
-## Understanding IPv6 basics
+### Understanding IPv6 basics
 
-## Applying runtime network configuration
+### Applying runtime network configuration
 
-## Understanding network device naming
+### Understanding network device naming
 
-## Managing hostnames
+### Managing hostnames
 
-## Managing hostname resolutions
+### Managing hostname resolutions
 
-## Using common network tools
+### Using common network tools
 
 
-### Managing Time
+## Managing Time
 
-## Understanding & managing Linux time
+### Understanding & managing Linux time
 
-## Understanding NTP protocol
+### Understanding NTP protocol
 
-## Configuring time synchronisation
+### Configuring time synchronisation
 
 
-### Working with Systemd
+## Working with Systemd
 
-## Understanding `systemd`
+### Understanding `systemd`
 
-## Managing `systemd` services
+### Managing `systemd` services
 
-## Modifying service configuration
+### Modifying service configuration
 
-## Understanding targets
+### Understanding targets
 
 
-### Process Management
+## Process Management
 
-## Understanding Linux processes and jobs
+### Understanding Linux processes and jobs
 
-## Managing interactive shell jobs
+### Managing interactive shell jobs
 
-## Monitoring processes with top
+### Monitoring processes with top
 
-## Changing top display properties
+### Changing top display properties
 
-## Monitoring process properties with ps
+### Monitoring process properties with ps
 
-## Changing process priority
+### Changing process priority
 
-## Managing process with kill
+### Managing process with kill
 
 
-### Managing Software
+## Managing Software
 
-## Installing software from source packages
+### Installing software from source packages
 
-## Understanding software packages
+### Understanding software packages
 
-## Managing libraries
+### Managing libraries
 
-## Understanding repositories
+### Understanding repositories
 
-## Managing packages with `yum`
+### Managing packages with `yum`
 
-## Managing packages with `apt`
+### Managing packages with `apt`
 
-## Using `rpm`
+### Using `rpm`
 
 
-### Scheduling Tasks
+## Scheduling Tasks
 
-## Understanding Linux task scheduling
+### Understanding Linux task scheduling
 
-## Scheduling tasks with `cron`
+### Scheduling tasks with `cron`
 
-## Using systemd timers
+### Using systemd timers
 
-## Using `at` to schedule tasks
+### Using `at` to schedule tasks
 
 
-### Reading Log Files
+## Reading Log Files
 
-## Understanding Linux logging
+### Understanding Linux logging
 
-## Working with `journalctl`
+### Working with `journalctl`
 
-## Understanding `rsyslog`
+### Understanding `rsyslog`
 
 
 
