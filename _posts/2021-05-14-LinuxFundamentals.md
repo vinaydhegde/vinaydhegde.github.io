@@ -1,7 +1,15 @@
 ---
-layout: post
 title: "Linux Fundamentals"
+toc: true
+toc_label: "Content"
+toc_sticky: true
+tags:
+  - Linux Fundamentals
+
 date: 2021-05-14
+header:
+  teaser: /assets/images/nature.jpg
+excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ---
 
 ## Linux Distributions
