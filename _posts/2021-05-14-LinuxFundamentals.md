@@ -27,21 +27,37 @@ There are many other distrubutions. Some of the important distrubutions are, **S
 
 ## Linux File System Hierarchy
 Every Linux file system starts with `/`. 
+
 `/` is the root directory. 
+
 `/bin` for binaries. 
+
 `/home` for user home directories
+
 `/var` directory, where you will find log files and more. var contains a wide variety of files that dynamically can be created by the operating system, and one of the most commonly known directories in var is var/log. In var/log, you will find log files that your system is creating. 
-`/usr` It is probably one of the most important directory on your system. It's like Program Files in Windows, and you will find all of the binaries, which are divided in the subdirectory `bin` and `sbin`. bin for regular binaries, sbin for system binaries. So sbin are root commands, and bin are regular user commands. 
+
+`/usr` It is probably one of the most important directory on your system. It's like Program Files in Windows, and you will find all of the binaries, which are divided in the subdirectory `bin` and `sbin`. bin for regular binaries, sbin for system binaries. So sbin are root commands, and bin are regular user commands.
+
 `/boot` directory: for booting, and often, depending on your Linux configuration, the boot directory will be on a separate partition, because the files that are in the boot directory need to be accessible at all times. Linux kernel, the heart of your operating system is also located here.
+
 `/dev` It contains device files and these files provide access to hardware. One of the device file is hard disk. Fo ex: sda1 is hard disk,  sda1 and sda2 are partitions on your hard disk.
+
  `/etc` is for configuration files. For ex: `os-release` is a standard configuration file that should exist on all Linux services, and it describes the current version that you are using. `password` file is one another important configuration file 
+ 
 `/media` and `/mnt` are  for mounts, for connecting devices. Mount means that you can connect a storage device to a separate directory
+
 `/proc` One of the most intriguing directories on your system is proc, because proc is an interface to the Linux kernel
+
 For ex:  `cpuinfo`, providing CPU information that the kernel has directly detected from the hardware in your computer. `meminfo`, which is providing memory information.
+
 `/root` is the home directory for the root user. 
+
 `/run`  is a new temp directory. Processes that temporarily need to write files do that in the run directory. 
+
 `/srv` is typically empty. It's meant for services, and you can use it to store document roots for services like a web server or an FTP server. 
+
 `/sys` is for hardware information.  
+
 `/tmp` is for temporary files. This is the old directory where /run is the new directory, where processis can write temporary files. 
 
 
