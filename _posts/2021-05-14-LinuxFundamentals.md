@@ -23,9 +23,9 @@ There are many other distrubutions. Some of the important distrubutions are, **S
 
 
 
-### Essential File Management Tools
+## Essential File Management Tools
 
-## Linux File System Hierarchy
+### Linux File System Hierarchy
 Every Linux file system starts with `/`. 
 
 `/` is the root directory. 
