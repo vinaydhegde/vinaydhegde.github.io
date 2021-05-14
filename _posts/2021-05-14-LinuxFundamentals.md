@@ -11,14 +11,21 @@ header:
   teaser: /assets/images/nature.jpg
 excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ---
+### Introduction
 
 ## Linux Distributions
 
 ## Linux File System Hierarchy
 
+
+### Using Essential tools
+
 ## Some basic commands
 
 ## Getting help with `man`
+
+
+### Essential File Management Tools
 
 ## Listing files with `ls`
 
@@ -44,6 +51,9 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 
 ## Managing file compression
 
+
+### Working with Text Files
+
 ## Understanding `vi`
 
 ## Creating text files with `vi`
@@ -68,7 +78,14 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 
 ## Creating simple sudo configuration
 
+
+
+### Connecting to a Server
+
 ## Using `SSH` to connect to remote server
+
+
+### Working with Bash Shell
 
 ## Understanding the shell and other core linux components
 
@@ -83,6 +100,9 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ## Using other bash features
 
 ## Working with Bash startup files
+
+
+### User and Group Management
 
 ## Understanding users
 
@@ -102,11 +122,17 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 
 ## Managing current sessions
 
+
+### Permissions Management
+
 ## Understanding and managing basic Linux permissions
 
 ## Understanding and managing advance Linux permissions
 
 ## Managing `umask`
+
+
+### Storage Management Essentials
 
 ## Understanding Linux storage solutions
 
@@ -115,6 +141,9 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ## Creating file systems
 
 ## Mounting file systems
+
+
+### Managing Networking
 
 ## Understanding IPV4 basics
 
@@ -130,11 +159,17 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 
 ## Using common network tools
 
+
+### Managing Time
+
 ## Understanding & managing Linux time
 
 ## Understanding NTP protocol
 
 ## Configuring time synchronisation
+
+
+### Working with Systemd
 
 ## Understanding `systemd`
 
@@ -143,6 +178,9 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ## Modifying service configuration
 
 ## Understanding targets
+
+
+### Process Management
 
 ## Understanding Linux processes and jobs
 
@@ -158,6 +196,9 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 
 ## Managing process with kill
 
+
+### Managing Software
+
 ## Installing software from source packages
 
 ## Understanding software packages
@@ -172,6 +213,9 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 
 ## Using `rpm`
 
+
+### Scheduling Tasks
+
 ## Understanding Linux task scheduling
 
 ## Scheduling tasks with `cron`
@@ -179,6 +223,9 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ## Using systemd timers
 
 ## Using `at` to schedule tasks
+
+
+### Reading Log Files
 
 ## Understanding Linux logging
 
