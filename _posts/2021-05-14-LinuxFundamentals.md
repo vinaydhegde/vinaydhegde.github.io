@@ -14,18 +14,17 @@ excerpt: "This blog covers Linux fundamentals and regualrly used commands"
 ## Introduction
 
 ### Linux Distributions
-**LinuxFoundation** is an organization that takes care of many Linux projects. But there are other organizations as well who take care some of Linux projects. For example, **Linux Kernel, Systemd, GNU utils** are some of these projects. All these software are available for free, and anybody can use it. So if you are very skilled you can take all this software, put it together, and build your own operating system. And that is exactly the essence of what we call distribution. So the Linux distribution is a collection of software that consists of all this open source software.
+**LinuxFoundation** is an organization that takes care of many Linux projects. Like Linux Foundations, there are many other organizations who take care some of Linux projects. For example, **Linux Kernel, Systemd, GNU utils** are some of these projects. All these software are available for free, and anybody can use it. So if you are very skilled you can take all this software, put it together, and build your own operating system. And that is exactly the essence of what we call distribution. So the Linux distribution is a collection of software that consists of all this open source software.
  
-One big and important distribution is **RedHat** and it is the leading Linux distribution. For the simple reason that RedHat is providing enterprise supported Linux.
-There are two related distributions, one of them is **CentOS**. CentOS is the community enterprise operating system, and the only difference between RedHat Enterprise Linux and CentOS is that in CentOS the proprietary information from RedHat inc. has been removed. So CentOS is a community enterprise operating system, which means it is available completely for free. And another important distribution in the RedHat family is **Fedora**. Fedora is the development platform, or the community operating system. 
-The other important Linux distribution is **Ubuntu**. Ubuntu itself doesn't stand on its own. Because Ubuntu was based on a very old and respectable Linux distribution with the name **Debian**. And based on Ubuntu we have another distribution which is **Linux Mint**. 
-There are many other distrubutions. Some of the important distrubutions are, **SUSE** & **Oracle Linux distrubution**
+One of the major and leading Linux distribution is **RedHat**. For the simple reason that RedHat is providing enterprise support on Linux.
+There are two related distributions. 1. **CentOS** 2. **Fedora**
+CentOS is the community enterprise operating system where it doesn't contain any proprietary information which  RedHat inc. has. So it's a community enterprise OS.
+Fedora is the development platform, or the community operating system.
+Another important Linux distribution is **Ubuntu**. Ubuntu is based on old Linux distrubution **Debian**. Based on Ubuntu, there is one more distrubution called **Linux Mint**.
+There are many other distrubutions. Viz. **SUSE** & **Oracle Linux**
 
 
-
-## Essential File Management Tools
-
-### Linux File System Hierarchy
+## Linux File System Hierarchy
 Every Linux file system starts with `/`. 
 
 `/` is the root directory. 
