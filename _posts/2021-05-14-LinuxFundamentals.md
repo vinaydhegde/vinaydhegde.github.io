@@ -71,6 +71,13 @@ For ex:  `cpuinfo`, providing CPU information that the kernel has directly detec
 ## Essential File Management Tools
 
 ### Listing files with `ls`
+`ls` list files (and directories) in the current diectory
+`ls -R` list files in current directory and sub directories
+`ls -l` long listing. show all fields/coloumns including permissions
+`ls -lt` sort by modification time, newest first
+`ls -ltr` sort by modification time, newest last
+`ls -d` or `ls -ld` list directories themselves, not their contents. Useful, when you have to check permission of a directory
+`ls -il` list inode or index number also
 
 ### Using wildcards
 
