@@ -316,44 +316,143 @@ similarly, `egrep ‘ab{2}c’ <filename>`
 
 
 ### Using `su`
+**su** switch user. run a command with substitute user and group ID
+`su -` switch to **root** and change the shell to root's shell (current directory is home directory of root)
+`su` switch to root, but don't change the shell (i.e. root's environment variables will not be available in the current shell though you switched to 'root' user)
+`su - user1` switch to user1 and change the shell to user1's shell
+`su user1` switch to user1, but don't change the shell
 
 ### Using `sudo`
+`sudo <command>` Execute the command as the super user or another user
+For any user to run `sudo`, user must be member of **wheel** group (in centos) or **admin** group in (Ubuntu). Otherwise, you would get error like `user is not in the sudoers file. This incident will be reported`
+To add a user to wheel group, switch to root user and run,
+`usermod -aG wheel <user>`
+(you need to logout and login to take this change in to effect or you can run `newgrp -`) 
+
+When multiple commands needs to be run sudo, you can use:
+`sudo -i`
+This will ask for the current user's password (not the root password). If user has the sudo previlage, root shell will be initialized. Then you can run commands without sudo.
+
+In Ubuntu, root user doesn't have password. So, you cannot use `su`. The only way to switch user & run commands is `sudo -i`
+
 
 ### Creating simple sudo configuration
+sudo configuration is stored in `/etc/sudoers` which you should never edit manually
+You can use the command `sudo visudo` to edit or update this file
+For example, this file contains a line,
+%wheel ALL=(ALL)    ALL
+This line says, for **wheel** group, ALL hosts, ALL commands, ALL users
 
+Similarly, we can set different rule for different user/group in the sudoers file. For ex:
+`user1 AAL=/bin/passwd` 
+Here, user1 is allowed change his password, nothing else
+
+We can create snapin file under /etc/sudoers.d dir & create you own configuration
+For ex: create a file `/etc/sudoers.d/ansible` and add the following configuration
+`ansible ALL=(ALL) NOPASSWD: ALL`
+With this configuration, 'ansible' user will be able to run sudo command without entering the password
 
 
 ## Connecting to a Server
 
 ### Using `SSH` to connect to remote server
+`chvt` Change virtual terminal
+In Linux there are 6 terminals available. Alt+F2, Alt+F3, Alt+F4 etc can be used to toggle between different terminals. terminal 1 is a graphical mode. Rest all are text terminals.
+For ex: `chvt 2`
 
+`ssh`
+`ssh-keygen` 
+`ssh-copy-id`
+`scp`
+`who` shows which terminals are used
 
 ## Working with Bash Shell
 
 ### Understanding the shell and other core linux components
+Bash(Shell) -> SysCalls -> Kernel -> Hardware
 
 ### Using I/O redirection and piping
+s`ort < <file_name>`
+`ps aux | tee psfile` tee command is used to redirect output to a file as well as to console
+
+
+
 
 ### Working with `history`
+History of all command is written to `~/.bash_history`
+`history -c` clear the current history (from in-memory)
+`histrory -w` write the current history from in memory to history file. In memory hostory will be deleted
+`Ctrl-R` for reverse-i-search
+`!nn` to repeat a specific line from history
 
 ### Using command line completion
+`yum install bash-completion` install bash completion package if not already installed
 
 ### Using variables
+`variable_name=value`
+`echo $variable_name` 
+By default, variables are only known to the current shell. To make it available to the sub shells, use **export**
+`export variable_name=value`
+`env` to list all environement variables
 
 ### Using other bash features
+`Ctr-l` clear screen
+`Ctrl-u` wipe out current command line
+`Ctr-a` move to begining of a line
+`Ctrl-e` move to end of line
+`Ctrl-c` interrupt current process
+`Ctrl-d` exit
+`Ctrl-v` end of file sign. can be used to close the editor
+
+**Alias** set command alias (set through /etc/profile file)
+for ex: `alias help=man` with this, can use help command i.s.o man to get the manual pages
+`alias egrep=‘egrep —color=auto’`
+`alias fgrep=‘fgrep —color=auto’`
+`alias l.=‘ls -d .* —color=auto’`
+`alias ll=‘ls -l —color=auto’`
+`alias ls=‘ls —color=auto’`
+`alias mv=‘mv -i’`
+`alias rm=‘rm -i’`
+`alias which=‘alias | /usr/bin/which —ty-only —read-alias —show`
+If you set alias or variables (including export) this in a shell, it will not be permanent. To set it permanenently you can use bash startup files.
 
 ### Working with Bash startup files
+`/etc/environment` contains list of variables. this file is processed while starting bash. This is universal.
+`/etc/profile` this is for all users (not for processes).Execute while users login
+`/etc/profile.d` snappin dir contains additional configuration
+`~/.bash_profile` user specific version
+`~/.bash_logout` processed when user logsout. can be be used for cleanup tasks
+`/etc/bashrc` processed everytime a subshell is started
+`~/.bashrc` user specific one for sub shell
+
+You can set aliases or export variables in the above confign files
+
+Aliases are available in subshell also, but not the variables. Use ‘export’ to make variables available everywhere
+`/etc/Profile.d` is a directory & you can create .sh files & set your variables or aliases.
 
 
 ## User and Group Management
 
-### Understanding users
-
 ### Understanding file ownership
+```[user1@localhost log]$ cd /tmp
+[user1@localhost tmp]$ touch my_file
+[user1@localhost tmp]$ ls -l my_file 
+-rw-rw-r--. 1 user1 user1 0 May 16 21:14 my_file
+```
+As you can see, file is owned by 'user1' and the group owner is 'user1'. i.e The user who created became owner of the file and the primary group of that user will become group owner of that file.
+A default file permission is set. Typically, for files it is 664 (read/write for user & group. For others read) and for directory it is 775
 
 ### Creating users with `useradd`
+`useradd` or `adduser` Creates a user
+for ex: `useradd -C “my user” -G wheel -s /bin/passwd user1`
+here -s is setting the default shell to /bin/passwd, -G is adding the user to wheel group & hence giving sudo access
+As every time user ‘user1’ tries to login, it will prompt for changing the password. we can only do that with this user
+Note: we can set password while creating user but we need to pass encrypted password only. so it is useless
+
+`adduser` in Ubuntu, will create a user & ask for password. It is interactive
 
 ### Creating groups with `groupadd`
+`groupadd <groupname>` create group name
 
 ### Managing users and groups properties
 
