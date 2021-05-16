@@ -203,25 +203,117 @@ using zip utility:
 
 `file <filename>` command will analayze file metadata and tell what type of file it is
 
+`tree` command will show the file hierarchy 
+
 ## Working with Text Files
 
 ### Understanding `vi`
-
-### Creating text files with `vi`
+`o` open a new line
+`v` visualize. Allows you to make a block (select multiple lines)
+`d` delete a block (cut)
+`p` paste
+`y` copy
+`dd` delete a line
+`u` undo
+`/<string>` search
+`gg`  to go to top
+`<shift> g (or G)` go to end
+`:%s/<string>/<new_string>/` search and replace only 1st occurance
+`:%s/<string>/<new_string>/g` search and replace all occurance
+`vimtutor` to learn more about vi or vim
 
 ### Browsing text files with `more` and `less`
+**more** and **less** are filters for paging through text one screenful at a time. Both does similar job. But **less** is more powerful than **more**. So it is recommanded to use **less**
+
+`more <filename>`
+enter space bar to scroll down. You cannot scroll up when using more
+q to quit
+
+`less <filename>`
+here, you can scroll up and down. It’s more intitutive
+ 
 
 ### Using `head` and `tail` to see file start and end
+`head <file>` display only first 10 lines
+`head -n 5 <file>` display first 5 lines
+`tail <file>` display last 10 lines
+`tail -n 1 <file>` display last line
+`head -n 5 <file> | tail -n 1` Display 5th line
+`tail -f <file>` freshen option. realtime display
 
 ### Displaying file contents with `cat` and `tac`
+`cat -A <filename>` Display non printable characters for ex: new line($), space etc
+`cat -b <filename>` Display line numbers skipping empty lines
+`cat -n <filename>` Display line nos including empty lines
+`cat -s <filename>` Remove repeated empty lines
+`tac <filename` Display lines in opposite order
 
 ### Working with `grep`
+`ps aux | grep ssh`
+`grep any /etc*` Any files containing ‘any’ in /etc -> it will return file name & the line containing the search
+`grep -i <search_string> <file>` case insensitive
+`grep -v` to exclude search
+for ex: `ps aux | grep ssh | grep -v grep` -> exclude grep
+`grep -R` Recursive
+`grep -l` Just print the file name not the line nos
+`grep -A3` Print the line containing searched string + 3 lines after that
+`grep -B3` Print the line containing searched string + 3 lines before that
 
 ### Understanding regular expression
+`^` begining of the line
+`$` end of the line
+`\<` begining of a word
+`\>` end of a word
+`\A` start of a file
+`\Z` end of a file
+`{n}` exact n times
+`{n,}` minimal n times
+`{,n}` n times max
+`{n,o}` between n and o times
+`*` zero or more times
+`+` one or more times
+`?` zero or one time
 
 ### Using regular expression with `grep`
+`egrep` extended grep
+some of the search function doesn’t work with **grep** for which you can use **egrep**
+for ex: `man -k user | grep 1|8`
+
+here, `|` should work as `or` operator, but grep doesn’t understand it. for that use can use egrep
+`man -k user | egrep 1|8`
+
+similarly, `egrep ‘ab{2}c’ <filename>`
+
+`egrep ‘(123)’ <filename>` search the block of 123
 
 ### Using common text processing utilities
+**cut** filter output from a text file
+**sort** sort files, often used in pipes
+**tr** translates uppercase to lowercase
+**awk** search for specific pattern
+**sed** powerful stream editor to batch modify text files
+
+`cut -d : -f 1 /etc/passwd` filter field no 1 (here the delimeter is :)
+`cut -d : -f 1 /etc/passwd | sort`
+`echo hello | tr [:lower:] [:upper:]`
+
+`sed -n 5p /etc/passwd` printing line no 5
+`sed -i` interactive
+`sed -i s/how/HOW/g <filename>`
+`sed -e` edit
+`sed -i -e ‘2d’ <filename>` Delete line no 2
+
+`awk -F : ‘{ print $4 }’ /etc/passwd` print 4th coloumn 
+`sort -n` for numeric sorting
+`awk -F : ‘/any/ { print $4 }’ /etc/passwd` print 4th coloumn that contains ‘any'
+
+`head -n 5 /etc/passwd | tail -n 1` print 5th line
+`sed -n 5p /etc/passwd` print 5th line
+`ps aux | awk ‘{ print $1}’` print 1st field/coloumn
+`cd /etc; grep -l ‘^root’ * 2>/dev/null` print only the file names (not the searched string) which has ‘root’ in the line beginning
+`grep ‘^…$' * 2>/dev/null` search files with lines containining only 3 characters
+`grep ‘\<alex\>’ <filename>` search for a specific word. search for ‘alex’ not Alexander
+
 
 ### Using `su`
 
