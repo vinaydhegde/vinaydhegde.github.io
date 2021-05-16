@@ -455,34 +455,140 @@ Note: we can set password while creating user but we need to pass encrypted pass
 `groupadd <groupname>` create group name
 
 ### Managing users and groups properties
+`w` will list who logged in to the host
+`who` is shorter version of w
+`getent` is used to get information from administrative databases
+`getent passwd user1` here administrative database is passwd and it is fetching info about a user called ‘user1’
+**/etc/shadow** is the main configuration file for user accounts
+**usermod** to modifiy user account
+for ex: `useradd -aG wheel user1` will add user1 to wheel group
+Here, a -> is to append to existing set of groups
+
+id <username>: to list the user & group details
+
+`groupmod` to modify group properties
+`userdel <username>`
+`groupdel <groupname>`
 
 ### Configuring defaults for new users
+`useradd -D` will list the defaults for a user
+**/etc/login.defs** is used as the default configuration file for users. For example, password age etc.
+**/etc/default/useradd** this is another configuration file 
+**/etc/skell** is a directory with files which will be copied to user’s home directory when a new user is created. As a admin we can create files here which needs to be copied to every user’s home 
 
 ### Managing password properties
+`passwd -l` lock the account
+`password -u` unlock the account
+`password -e` expire the password
+`password -x` to set maximum password lifetime
+`Password -n` to set minimum password lifettime
+`password -S` will show password status for a user like what is the age, locked or unlocked etc
+`echo <password> | passwd —stdin <username>`
+`history -c` to clean the history
+`chage <username>` to change the age of a user. it is interactive
 
 ### Understanding users and group configuration files
+`/etc/group` contains group information.
+`/etc/passwd` traditionally used to contain user & password info. Since it is readable to everyone, password info is now available in which **/etc/shadow**
+to edit **/etc/passwd** file(to add new user), you can use **vipw** command
 
 ### Managing current sessions
+**loginctl** allows current session management (alternate to w & who). But it can do many more stuffs.
+`loginctl list-sessions` different sessions that are currently opened
+`loginctl show-session <id>`
+`loginctl show-user <username>`
+`loginctl terminate-session <session-id>`
+`loginctl session-status <session-id>`
+
 
 
 ## Permissions Management
 
 ### Understanding and managing basic Linux permissions
+**chown** change user owner of a file
+For ex: 
+`chown user1 file1`
+`chown user1:user1 file1` here group ownership is also set
+
+**chgrp** change group owner of a file
+`chgrp group1 file1`
+
+**chmod** change permission of a file
+File permission is represented in 3 or 4 bit number. For example: 775 
+Here, 7 means read, write & execute, 5 means read & execute.
+
+read - 4, write - 2, execute - 1
+
+`chmod 770 file1`
+`chmod g-w file1` This is relative methos of setting permission. Here, g-w means, takeout write permssion from group owner
+
+In directories, these permission settings tranlates to,
+read - 4 - list files
+write - 2 - create/delete file
+execute - 1 - change directory (cd)
+
 
 ### Understanding and managing advance Linux permissions
+When chmod is used with 4 digits, 1st digit is for **suid+guild+sticky bit**
+suid-4, guid-2, sticky bit -1
+
+**suid** when suid is set, file will be run as owner of the file irrespective of who runs it
+to set suid, you can use `chmod u+s <filename>`
+
+`find / -perm /4000` find all files with suid(set user id) set.
+for example, /usr/bin/passwd file is set with 4000 (rwsr,r-x,r-x) with user as root & group as root. When a normal user runs passwd command, it will run as root.
+
+**sgid**: This is useful in shared user environement. when set on directory, any new files created by a user will have group owner same as the group owner of the directory. By default, group owner of a file will be the primary group of the user who created the file (typically primary group will be same as user name). In shared environment, it will be a problem because other user will not be able to write/have required permissions.
+`chmod g+s <directory_name>` to set sgid
+
+**sticky bit**: when this is set, only the directory owner or the file owner can delete the files even though users have file removal permission.
+`chmod +t <directory_name>` to set stick bit
+directory permission would look like: drwxrws—T 
+here T represents that, sticky bit is set
+s in the middle represents sgid is set 
+if s is set at the beginning, it says suid is set
 
 ### Managing `umask`
+**Umask** is used to set the default permission for both files and directories. It’s a common setting for both files and directories.
+umask is a shell setting that defines a mask that will be subtracted from the default permission.
+default permission on directories are 777
+default permission on files are 666
+for ex: if you run, `umask 022` Any new files you create will have permission as 644
+if you run `umask 027` Any new directories you create will have as 750
 
+Umask-> if you simply run ‘umask’ it will list the current umask value
+It will be stored/set in /etc/profile & bashrc files
+
+Note: typically all system users will have userid below 199. Ordinary user’s user id will be greater than 199.
 
 ## Storage Management Essentials
 
 ### Understanding Linux storage solutions
+`lsblk` to list all block devices & partitions. i.e. disks
+`fdisk <diskname>` to create partition. for ex: fdisk /dev/sda
+Sda1, sda2 will be like partitions
+(You need to use gdsik i.s.o fdisk on Ubuntu which uses new partiioning technique GPT whereas Centos 7 & older version are still using the old techinque MBR)
 
 ### Understanding MBR and GBT partitions
 
 ### Creating file systems
+After creating partition you need to create file system explicitly in Linux. **mkfs** utility is used for this.
+file system types: .xfs (default file system in Red-hat), .ext4(default in Ubuntu), vfat (compatible for Windows, Linux & Mac), btrfs, rtfs(for Windows support. not really recommanded in Linux)
+For ex: `mkfs.xfs /dev/sdb1`
+
 
 ### Mounting file systems
+After file system is created, you need to mount it
+`mount /dev/sdb1 /mnt`
+simply running  `mount` will list all the mounted devices
+
+`umount /mnt` Unmount the mount
+`lsof <path>` will show you opened files/processes
+
+`findmnt` to list the mounts, where it is mounted
+
+`!mo` will list the commands which starts with ‘mo’ from history
+
 
 
 ## Managing Networking
