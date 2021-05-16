@@ -111,16 +111,70 @@ let's create '/tmp/test' dir and then run,
 
 
 ### Working with directories
+`mkdir /tmp/test` will create 'test' dir in /tmp
+`mkdir /tmp/test1/test2` would complain `mkdir: cannot create directory '/tmp/test1/test2': No such file or directory`
+`mkdir -p /tmp/test1/test2` will create test1 and test2 dir.
+`rmdir /tmp/test` will remove 'test' dir, only if it is empty
+`rm -rf /tmp/test` will remove 'test' dir and it's contents
 
 ### Using absolute and relative paths
+Let's say, current dir is /temp/test/test1
+`cd ../test2` will switch the current directory to /temp/test/test2. `..` is used to refer one folder up. This is relative path.
+`cd /temp/test/test2` will switch the current directory to /temp/test/test2. This is absolute path
 
 ### Moving files with `mv`
+mv command is used to move file/dir (cut and paste) and also rename a file/dir
+let's say, /tmp/test is a directory with some files in it.
+`mv /tmp/test /temp/some-other-dir/test` will move 'test' directory and it's contents to 'some-other-dir'
+`mv /tmp/test /temp/test-test` will rename 'test' dir to 'test-test' 
 
 ### Removing files with `rm`
+`rm /tmp/file1` will remove file1
+`rm -rf /temp/test` will remove test directory and it's contents
 
 ### Understanding HardLinks and SymbolicLinks
+A link is basically like a shortcut which you can see in other operating systems. But on Linux, it's a little bit different. There are 2 type of links. **hard link** and **symbolic link** (or soft link). 
+To understand link, you should know about `inode`. Every file has an inode, and one inode only. In the inode you find all the administration of a file. if you type ls -l you see a lot of information that is the information that is stored in the inode. From the inode, you go to the blocks. The blocks which is the file information that is physically stored on disc. Now in order to get to an inode, for us human beings, we give a name to a file. And the idea is you have a name somewhere in the directory, and this name points to the inode. You can have more than one name on the same inode. So you have name1 and name2 which both can point to the same inode. That's what we call a **hard link**. There is no difference between name1 and name2. So there's no relation between the original one and the link. Both are directly going to the inode. There is no hierarchical difference. No matter which one you remove, the other one will survive. Because both of them use the inode to go to the blocks. So if you write to the file using name1, then you will see that name2 will see the changes as well.
+
+The **symbolic link** is a little bit different. Let’s say sym1, a name that points to a name1. Here youthere is a hierarchical difference. Because the symbolic link doesn't go the inode directly, the symbolic go to a hard link. And if this hard link would be removed then the symbolic links become invalid and don't work anymore. 
+Hard link has two limitations. 1. There is no cross device. 2. hard links cannot be created on directories. So hard links can only be two files, not two directories.
+
+```[user1@localhost tmp]$ touch /tmp/name1
+[user1@localhost tmp]$ ls -li name1
+903349 -rw-rw-r--. 1 user1 user1 0 May 16 18:04 name1
+```
+Here, we created a new file 'name1'. ls -li is listing the inode number of the file and also the link counter which is 1, as no link is created yet
+Now, let's create a hard link.
+```[user1@localhost tmp]$ ln name1 name2
+
+[user1@localhost tmp]$ ls -li name1 name2
+903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
+903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name2
+```
+As you can see inode number is same for both the files
+
+Create a symlink
+```[user1@localhost tmp]$ ln -s name1 sym1
+
+[user1@localhost tmp]$ ls -li name1 sym1
+903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
+903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1
+```
 
 ### Finding files with `find`
+find <path> -name <file-name>
+find <path> -user <username>: find all files created by a user
+Mkdir /root/any; find / -user any -exec cp {} /root/any \;
+{} -> contains output of first command when used with exec
+\; -> exec should always end with \;
+find / -size +100m
+Find /-size +100M 2>/dev/null
+
+Find / -type -f -size +100M
+find /etc -exec grep -l any {} \; -exec cp {} root/any/ \;
+find /etc -name ‘*’ -type f | xargs grep “127.0.0.1”
+Here, xargs is used along with pipe(|) to get the output line by line
+Xargs is similar to -exec
 
 ### Using advance `find` options
 
