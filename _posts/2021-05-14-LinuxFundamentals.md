@@ -72,14 +72,22 @@ For ex:  `cpuinfo`, providing CPU information that the kernel has directly detec
 
 ### Listing files with `ls`
 `ls` list files (and directories) in the current diectory
+`ls -a` show hidden files also
 `ls -R` list files in current directory and sub directories
 `ls -l` long listing. show all fields/coloumns including permissions
 `ls -lt` sort by modification time, newest first
 `ls -ltr` sort by modification time, newest last
 `ls -d` or `ls -ld` list directories themselves, not their contents. Useful, when you have to check permission of a directory
 `ls -il` list inode or index number also
+`ls -S` sort files by size
 
 ### Using wildcards
+`ls *` list everything recursively
+`ls a*` list everything recursively which starts with 'a'. Note: if a directory starts with 'a', all files in it will be listed.
+`ls -d a?d*` list files which starts with 'a' and followed by any sigle character and then char 'd' followed by any number of characters. For ex: audit
+Note: when '-d' is used, it won't search recursively
+`ls -d a[nu]*`list files which starts with 'a' and followed by 'n' or 'u' and then any characters. For ex: anaconda, audit
+`ls -d m[a-e]*`list files whcih startes with 'm' and second char can be either 'a' or 'b' or 'c' or 'd' or 'e' followed by any characters. For ex: maillog, messages
 
 ### Copying files with `cp`
 
