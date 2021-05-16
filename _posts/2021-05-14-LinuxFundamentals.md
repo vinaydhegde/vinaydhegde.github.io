@@ -162,26 +162,46 @@ Create a symlink
 ```
 
 ### Finding files with `find`
-find <path> -name <file-name>
-find <path> -user <username>: find all files created by a user
-Mkdir /root/any; find / -user any -exec cp {} /root/any \;
+`find <path> -name <file-name>`
+`find <path> -user <username>` find all files created by a user
+`mkdir /root/any; find / -user any -exec cp {} /root/any \;`
 {} -> contains output of first command when used with exec
 \; -> exec should always end with \;
-find / -size +100m
-Find /-size +100M 2>/dev/null
+`find / -size +100m`
+`find /-size +100M 2>/dev/null`
 
-Find / -type -f -size +100M
-find /etc -exec grep -l any {} \; -exec cp {} root/any/ \;
-find /etc -name ‘*’ -type f | xargs grep “127.0.0.1”
+### Using advance `find` options
+`find / -type -f -size +100M`
+`find /etc -exec grep -l any {} \; -exec cp {} root/any/ \;`
+`find /etc -name ‘*’ -type f | xargs grep “127.0.0.1”`
 Here, xargs is used along with pipe(|) to get the output line by line
 Xargs is similar to -exec
 
-### Using advance `find` options
 
 ### Archiving files with `tar`
+`tar -cvf my_archive.tar /home`
+`tar -xvf my_archive.tar` it will be extracted to the current directory. Use -C to switch the output path
+`tar -tvf` to show the content
+
+Dd if=/dev/zero of=bigfile1 bs=1M count=1024
+Dd -> copy block devices
+Here, we are copying block device /dev/zero to generate zeros
+of -> output file
+
 
 ### Managing file compression
+using gzip utility:
+`gzip <filename>`
+`gunzip <file.gz>` To uncompress
+`time <command>` to see how much time a command is taking
 
+using bzip2 utility:
+`bzip2 <filename>`
+
+using zip utility:
+`zip <filename>`
+
+`file <filename>` command will analayze file metadata and tell what type of file it is
 
 ## Working with Text Files
 
