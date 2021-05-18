@@ -161,7 +161,7 @@ Create a symlink
 903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1
 ```
 
-### Finding files with `find`
+### Finding files with find
 `find <path> -name <file-name>`
 `find <path> -user <username>` find all files created by a user
 `mkdir /root/any; find / -user any -exec cp {} /root/any \;`
@@ -602,10 +602,47 @@ simply running  `mount` will list all the mounted devices
 ### Understanding network device naming
 
 ### Managing hostnames
+`/etc/resolv.conf` will contain dns server details
+
+`dhclient` to reach dhcp server and re-obtain the ip
+
+`biosdevname` reveals info about network device location
+
+`hostname -I` shows the IP addresses assigned currently to the current host
+`/etc/hostname` will have host name
+
+`hostnamectl status` about the host (similar to uname -a)
+`hostnamectl set-hostname` set hostname
+
+if no DNS is configured, you can use local alternative, /etc/hosts
+here you can have ip & host mapping
+
+`/etc/nsswitch.conf` will define search order (for ex: local dns 1st & then the dns. local passwd first & then the database)
+
+`ping -f -s <no-of-bytes> <ip>`
 
 ### Managing hostname resolutions
 
 ### Using common network tools
+`netstat -tulpen` everything listnening on the current host
+`ss` (socket stat) is the new alternate to netstat
+for ex: `ss -tuna`
+
+`nmap` (not installed by default. yum install nmap) network scanning utility. will show what ports are available no matter in which machine. It’s a dangerous tool to use if you are not the expert.
+
+`dig` to check/troubleshooting dns
+
+`ip a`
+`ip a a dev tho 1.2.3.4/8`
+`ip route show`
+`uname`
+
+`ss -tuna` will show the port details. but doesn’t show which service is using that.
+(it will also show established connection. like any ssh connection established by someone)
+`cat /etc/services` will show service & it’s port details
+for ex: `gerp 22 /etc/services` will show service name for the port 22
+
+
 
 
 ## Managing Time
