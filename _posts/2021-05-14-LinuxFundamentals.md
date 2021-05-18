@@ -644,47 +644,167 @@ for ex: `gerp 22 /etc/services` will show service name for the port 22
 
 
 
-
 ## Managing Time
 
 ### Understanding & managing Linux time
+hardware time is set in bios
+system time
+NTP (Network time protocol): synchronize system time from internet
 
 ### Understanding NTP protocol
 
 ### Configuring time synchronisation
+`date` will show date & time
+`date -s` set time
+`hwclock` to synchronise hardware time with system time
+`imedatectl` 
+`timedatectl set-time`
+`timedatectl set-timezone`
+`timedatectl status`
+
+`stratum`
+`insane clock`
+`iBurst`
+`chronyc source` wil show ntp servers you are connected with
+`ntpdate` set date from ntp servers
+`ntpq` to query ntp
 
 
 ## Working with Systemd
 
 ### Understanding `systemd`
+**systemd** is the manager of everything in Linux. It’s the first thing that is started after starting linux kernel.
+To Boot linux system, first bootlooder will kick off & then bootloader will load the KERNEL & then kernel will start systemd.
+
+systemd is responsible for starting all the services & generating login prompt.
+It also starts processes.
+It also manages mounts, timer, paths & much more
+Items that are managed by systemd are called **units**.
+Default units are in `/usr/lib/systemd/system`, custom uints are in `/etc/systemd`
 
 ### Managing `systemd` services
+`systemctl -t help` shows unit types (for ex: service, socket, busname,mount,etc)
+`systemctl list-unit-files` shows all installed units
+`systemctl list-units` lists active units
+`systemctl enable name.service` enables but doesn’t start the service
+`systemctl start name.service` starts a service
+`systemctl disable name.service` disable a service
+`systemctl stop name.service` stop a service
+`systemctl status name.service` shows the status
 
 ### Modifying service configuration
+Note: Earlier `/etc/fstab` was used to manage all mounts. Now **systemctl** can handle this.
+Below listed commands are the examples for configuring services:
+`yum install vsftdb`install ftp server
+`systemctl status vsftdb
+`systemctl enable vsftdb` (to automatically start after reboot)
+`systemctl start vsftdb`
+
+`systemctl cat name.service` reads current unit configuration 
+`systemctl show` shows all available configuration parameters
+`systemctl edit name.service` allows you to edit service configuration
+After modifying service configuration, use `systemctl daemon-reload`
+`systemctl restart name.service` to restart the service
+
+`systemctl cat vsftdbd.service` this will display the configuration file location. for ex: `/usr/lib/systemd/system/vsftdb.service` and other details
+
+`systemctl show vsfdtb.service`
+`systemctl edit vsftdb.service` it will create/edit `/etc/systemd/system/vsftdb.service.d/override.conf` to overide the original configuration in `/usr/lib/systemd/system/vsftdb.service`
+
 
 ### Understanding targets
+A **Target** is group of services.
+Some targets are isolatable, which means you can use them as a state your system should be in.
+There are 4 targets available by default
+  1. Emergency.target
+  2. rescue.target
+  3. Multi-user.target
+  4. Graphical.target
+
+`systemctl list-dependencies name.target` to see the contents and dependencies of a systemd target
+
+`systemctl start name.target`
+`systemctl isolate name.target`
+`systemctl list-dependencies name.target`
+`systemctl get-default`
+`systemctl set-default name.target`
+`systemctl list-units | grep target`
+
 
 
 ## Process Management
 
 ### Understanding Linux processes and jobs
+`bg` (to send jobs to background)
+`fg` (fore ground)
+`<command> &` to immediately send the job to background
+
 
 ### Managing interactive shell jobs
 
+
 ### Monitoring processes with top
+`top -u <user>` 
+if you press `F`, you can see what fields are avaialble in top interface
+you can use `<` and `>` to sort by different field
+`z` to use different color
+`W` will write current display settings in ~/.toprc
+
 
 ### Changing top display properties
 
 ### Monitoring process properties with ps
+`ps aux | less`
+`ps aux | grep ssh`
+`ps -ef` it will show PPID also
+`ps fax` it will show forest display. i.e. relation b/w processes
+`ps aux —sort pmem` to sort by memory usage
+
 
 ### Changing process priority
+`nice`
+`renice`
+You can use nice & renice from top interaface also
+
+`renice -n 5 <pid>` here we are setting the priority to 5 for a running process
+`nice -n -20 <command> &` this is for a new process
+
 
 ### Managing process with kill
+Signal: is a command which is sent to a process.
+for ex: SIGHUP, SIGTERM, SIGKILL
+
+`kill <pid>`
+`kill -9 <pid>` here 9 is the signal no.
+When signal number 9 is passed, it will not wait for any opened files to close before killing the process.
+`killall <process-name>` to kill many processes that have a same name
 
 
 ## Managing Software
 
 ### Installing software from source packages
+`yumdownloader gedit` will download gedit rpm package
+`rpm -iv` <downloaded-rpm>`
+This is the old way. Here we need to download required dependencies manually before installing the intended package
+
+**Software manager** were developed to fix the dependency problem. They do so by working with repositories.
+Common software managers are yum & apt
+
+**YUM:**
+yum uses repositories that are in `/etc/yum.repos.d`
+`yum install`
+`yum search` doesn’t search deep enough. For that, you can use `yum provides`
+`yum remove`
+`yum groups list`
+`yum groups install`
+`yum provides`
+`yum history` shows the history. allows you to undo changes
+`yum list installed` list all installed packages
+`yum update` update the entire system
+
+`yum repolist` shows available repos 
+
+GPG key is used to verify package. This will be downloaded along with the package
 
 ### Understanding software packages
 
@@ -693,30 +813,110 @@ for ex: `gerp 22 /etc/services` will show service name for the port 22
 ### Understanding repositories
 
 ### Managing packages with `yum`
+Examples:
+`yum search nmap` list all packages available related to nmap
+`yum install nmap-frontend`
+`yum list installed nmap` will list installed nmap related packages
+`yum remove nmap`
+`yum search semanage`
+`yum provides semanage`
+
+`yum groups install “Compute Node”`
+`yum history` will show the history with each step
+`yum history undo <step-name>` to undo specific step name. for ex: yum history undo 6
+
 
 ### Managing packages with `apt`
+`apt-get` & `apt-cache` are old utilities
+apt repositories are mentioned in `/etc/apt/sources.list`
+`apt search nmap`
+`apt install nmap`
+`apt remove nmap`
 
 ### Using `rpm`
+**RPM**(redhat package manager); should not be used anymore
+`dnf` Similar to yum, used in fedora. This will be a replacement for yum in future in redhat also.
 
+rpm can be still used to work with RPM database. allows you to package queries
+rpm -qf /my/file: will tell which package a file is from
+`rpm -ql my package` queries the database to list package contents
+To query package files instead of package contents, add ‘p’ to the options
+`rpm -qpc my package.rpm` lists configuration files in a downloaded package file
+`rpm -qp —scripts my package.rpm` shows scripts that may be present in a package
+
+`rpm -qf /usr/bin/passwd`
+`rpm -ql passwd`
+`rpm -qc passwd`
+`yum downloader nc`
+`rpm -qpl <nc-package-downloaded>`
+
+`yum list all` it will list all packages available from al repos
+`yum list installed` will show only the installed packages
 
 ## Scheduling Tasks
 
 ### Understanding Linux task scheduling
+cron uses **crond** daemon
+`crontab -e` to edit tasks
 
 ### Scheduling tasks with `cron`
+systemctl status crond
+/etc/crontab
+/etc/cron directory
+/etc/cron.d is a directory where you can create snapin files
+
+Suppose you want to run a script daily/weekly/monthly etc and you don’t care about the exact time, 
+then you can place the script in `/etc/cron/cron.daily` or `cron.weekly` files
+
+write a message ‘hello’ daily 4pm to syslog
+`0 16 * * * logger hello`
+
+Note: `logger` command allows to write log directly to syslog
+
 
 ### Using systemd timers
+A newer alternative to the cron job.
+create a **.timer** unit & run it using **systemctl**
+
+`/usr/lib/systemd/system` this will contain some .timer files
+timers will look for corresponding service to run.
+`systemctl status <timer-name>`
+for ex: `systemctl status fstrim.timer`
+`systemctl enable —now fstrim.timer`
 
 ### Using `at` to schedule tasks
+To run a command script only once.
+At uses **atd** daemon
+`atq` to query
+`atrm` to remove job
+
+For example, To create a file 5 min from now, run below commands from terminal
+```at now +5min
+touch /tmp/testfile
+Ctrl d to close at prompt
+```
 
 
 ## Reading Log Files
 
 ### Understanding Linux logging
+**syslog** is the legacy service that takes care of logging. In modern days, it is implemented through **rsyslogd**
+
+`systemd-journald`
+
 
 ### Working with `journalctl`
+`journalctl` shows complete journal
+`journalctl -u <unit>` shows info about specific unit (you can use tab completion)
+`journalctl —dmesg` shows kernel messages
+combined filters can be used like, `journalctl -u crond —since yesterday —until 9:00 -p info`
+`journalctl -u sshd`
+`journalctl tab tab` (to list the units by tab completion)
+`systemctl status sshd` gives similar info
+
 
 ### Understanding `rsyslog`
+/etc/rsyslog.conf: will contain rules like where speicific log types should be written. for ex: authentication related logs will be written to /var/log/secure
 
 
 
