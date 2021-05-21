@@ -186,7 +186,7 @@ To understand link, you should know about `inode`. Every file has an inode, and 
 The **symbolic link** is a little bit different. Let’s say sym1, a name that points to a name1. Here youthere is a hierarchical difference. Because the symbolic link doesn't go the inode directly, the symbolic go to a hard link. And if this hard link would be removed then the symbolic links become invalid and don't work anymore. 
 Hard link has two limitations. 1. There is no cross device. 2. hard links cannot be created on directories. So hard links can only be two files, not two directories.
 
-``` [user1@localhost tmp]$ touch /tmp/name1
+```[user1@localhost tmp]$ touch /tmp/name1
 
 [user1@localhost tmp]$ ls -li name1
 
