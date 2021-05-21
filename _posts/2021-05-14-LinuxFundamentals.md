@@ -187,15 +187,20 @@ The **symbolic link** is a little bit different. Let’s say sym1, a name that p
 Hard link has two limitations. 1. There is no cross device. 2. hard links cannot be created on directories. So hard links can only be two files, not two directories.
 
 ```[user1@localhost tmp]$ touch /tmp/name1
+
 [user1@localhost tmp]$ ls -li name1
+
 903349 -rw-rw-r--. 1 user1 user1 0 May 16 18:04 name1```
 
 Here, we created a new file 'name1'. ls -li is listing the inode number of the file and also the link counter which is 1, as no link is created yet
 Now, let's create a hard link.
 
 ```[user1@localhost tmp]$ ln name1 name2
+
 [user1@localhost tmp]$ ls -li name1 name2
+
 903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
+
 903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name2 ```
 
 As you can see inode number is same for both the files
@@ -205,9 +210,10 @@ Create a symlink
 ```[user1@localhost tmp]$ ln -s name1 sym1
 
 [user1@localhost tmp]$ ls -li name1 sym1
+
 903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
-903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1
-```
+
+903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1```
 
 ### Finding files with find
 
@@ -276,55 +282,92 @@ using zip utility:
 ## Working with Text Files
 
 ### Understanding `vi`
+
 `o` open a new line
+
 `v` visualize. Allows you to make a block (select multiple lines)
+
 `d` delete a block (cut)
+
 `p` paste
+
 `y` copy
+
 `dd` delete a line
+
 `u` undo
+
 `/<string>` search
+
 `gg`  to go to top
+
 `<shift> g (or G)` go to end
+
 `:%s/<string>/<new_string>/` search and replace only 1st occurance
+
 `:%s/<string>/<new_string>/g` search and replace all occurance
+
 `vimtutor` to learn more about vi or vim
 
 ### Browsing text files with `more` and `less`
+
 **more** and **less** are filters for paging through text one screenful at a time. Both does similar job. But **less** is more powerful than **more**. So it is recommanded to use **less**
 
 `more <filename>`
+
 enter space bar to scroll down. You cannot scroll up when using more
+
 q to quit
 
 `less <filename>`
+
 here, you can scroll up and down. It’s more intitutive
  
 
 ### Using `head` and `tail` to see file start and end
+
 `head <file>` display only first 10 lines
+
 `head -n 5 <file>` display first 5 lines
+
 `tail <file>` display last 10 lines
+
 `tail -n 1 <file>` display last line
+
 `head -n 5 <file> | tail -n 1` Display 5th line
+
 `tail -f <file>` freshen option. realtime display
 
 ### Displaying file contents with `cat` and `tac`
+
 `cat -A <filename>` Display non printable characters for ex: new line($), space etc
+
 `cat -b <filename>` Display line numbers skipping empty lines
+
 `cat -n <filename>` Display line nos including empty lines
+
 `cat -s <filename>` Remove repeated empty lines
+
 `tac <filename` Display lines in opposite order
 
 ### Working with `grep`
+
 `ps aux | grep ssh`
+
 `grep any /etc*` Any files containing ‘any’ in /etc -> it will return file name & the line containing the search
+
 `grep -i <search_string> <file>` case insensitive
+
 `grep -v` to exclude search
+
 for ex: `ps aux | grep ssh | grep -v grep` -> exclude grep
+
 `grep -R` Recursive
+
 `grep -l` Just print the file name not the line nos
+
 `grep -A3` Print the line containing searched string + 3 lines after that
+
 `grep -B3` Print the line containing searched string + 3 lines before that
 
 ### Understanding regular expression
