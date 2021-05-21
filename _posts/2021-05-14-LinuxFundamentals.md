@@ -193,6 +193,7 @@ Hard link has two limitations. 1. There is no cross device. 2. hard links cannot
 
 Here, we created a new file 'name1'. ls -li is listing the inode number of the file and also the link counter which is 1, as no link is created yet
 Now, let's create a hard link.
+
 ```[user1@localhost tmp]$ ln name1 name2
 
 [user1@localhost tmp]$ ls -li name1 name2
@@ -203,6 +204,7 @@ Now, let's create a hard link.
 As you can see inode number is same for both the files
 
 Create a symlink
+
 ```[user1@localhost tmp]$ ln -s name1 sym1
 
 [user1@localhost tmp]$ ls -li name1 sym1
