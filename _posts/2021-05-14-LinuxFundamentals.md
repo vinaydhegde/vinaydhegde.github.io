@@ -72,13 +72,21 @@ For ex:  `cpuinfo`, providing CPU information that the kernel has directly detec
 
 ### Listing files with `ls`
 `ls` list files (and directories) in the current diectory
+
 `ls -a` show hidden files also
+
 `ls -R` list files in current directory and sub directories
+
 `ls -l` long listing. show all fields/coloumns including permissions
+
 `ls -lt` sort by modification time, newest first
+
 `ls -ltr` sort by modification time, newest last
+
 `ls -d` or `ls -ld` list directories themselves, not their contents. Useful, when you have to check permission of a directory
+
 `ls -il` list inode or index number also
+
 `ls -S` sort files by size
 
 ### Using wildcards
