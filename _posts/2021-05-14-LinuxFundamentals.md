@@ -642,14 +642,14 @@ Aliases are available in subshell also, but not the variables. Use ‘export’ 
 
 ### Understanding file ownership
 
-```[user1@localhost log]$ cd /tmp
+`cd /tmp`
 
-[user1@localhost tmp]$ touch my_file
+`touch my_file`
 
-[user1@localhost tmp]$ ls -l my_file 
+`ls -l my_file`
 
--rw-rw-r--. 1 user1 user1 0 May 16 21:14 my_file
-```
+`-rw-rw-r--. 1 user1 user1 0 May 16 21:14 my_file`
+
 As you can see, file is owned by 'user1' and the group owner is 'user1'. i.e The user who created became owner of the file and the primary group of that user will become group owner of that file.
 
 A default file permission is set. Typically, for files it is 664 (read/write for user & group. For others read) and for directory it is 775
