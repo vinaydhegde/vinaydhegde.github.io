@@ -202,7 +202,8 @@ Now, let's create a hard link.
 
 903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
 
-903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name2 ```
+903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name2 
+```
 
 As you can see inode number is same for both the files
 
@@ -214,7 +215,8 @@ Create a symlink
 
 903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
 
-903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1```
+903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1
+```
 
 ### Finding files with find
 
