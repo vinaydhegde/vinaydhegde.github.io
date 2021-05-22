@@ -187,36 +187,36 @@ The **symbolic link** is a little bit different. Let’s say sym1, a name that p
 Hard link has two limitations. 1. There is no cross device. 2. hard links cannot be created on directories. So hard links can only be two files, not two directories.
 
 
-```  [user1@localhost tmp]$ touch /tmp/name1
-[user1@localhost tmp]$ ls -li name1
-903349 -rw-rw-r--. 1 user1 user1 0 May 16 18:04 name1
-```
+`touch /tmp/name1`
+`ls -li name1`
+`903349 -rw-rw-r--. 1 user1 user1 0 May 16 18:04 name1`
+
 
 
 Here, we created a new file 'name1'. ls -li is listing the inode number of the file and also the link counter which is 1, as no link is created yet
 Now, let's create a hard link.
 
-```  [user1@localhost tmp]$ ln name1 name2
+`ln name1 name2`
 
-[user1@localhost tmp]$ ls -li name1 name2
+`ls -li name1 name2`
 
-903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
+`903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1`
 
-903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name2 
-```
+`903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name2`
+
 
 As you can see inode number is same for both the files
 
 Create a symlink
 
-```[user1@localhost tmp]$ ln -s name1 sym1
+`ln -s name1 sym1`
 
-[user1@localhost tmp]$ ls -li name1 sym1
+`ls -li name1 sym1`
 
-903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1
+`903349 -rw-rw-r--. 2 user1 user1 0 May 16 18:04 name1`
 
-903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1
-```
+`903351 lrwxrwxrwx. 1 user1 user1 5 May 16 18:17 sym1 -> name1`
+
 
 ### Finding files with find
 
