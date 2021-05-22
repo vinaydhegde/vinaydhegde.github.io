@@ -20,15 +20,14 @@ I am a **Docker Certified Associate** and an **Associate Oracle Cloud Infrastruc
 
 
 
-I feel, **Devops** is the most abused word in the current Software Industry. Being in this profession for many years, I have seen the transition & evolution in this domain very closely. It was a continuous change/evolution interms of process/automation/tools/technology and it will continue to change/evolve.
-So, the term 'Devops' is may be coined few years back, but it is not got created overnight and also, it is not something/entriely new.
-However, I don't say it's a old wine in a new bottle. Becuase, definitely it has got a new flavor and rich in energy:)
+I feel, **Devops** is a most abused word in the current Software Industry. Being in this profession for many years, I have seen the transition & evolution in this domain very closely. The term 'Devops' is may be coined only few years back, but it is not something/entriely a new process/technology. As the software industry is getting matured, the technolgy & processes used in product development are also evolved. All the experience and learnings from the past, made us to define new processes/technologies like Devops, Agile & MicroService architecture which are more suited for the modern IT. 
+
 
 
 
 ## My Background and Journey in Devops
 
-I completed my Bachelor of Engineering in Electronics & Communication in the Year 2006 and joined a startup in Bangalore which was mainly in to product developemt and services, also a channel partner of IBM. I got to work on few IBM tools and support customers with training & implemention of those tools. Mainly, I worked on Rational ClearCase & some kind of automation scripting using Perl for Rational Purify Plus product.
+I completed my Bachelor of Engineering in Electronics & Communication in the Year 2006 and joined a startup called 'Rishi Systems' in Bangalore which was mainly in to product developemt and services, also a channel partner of IBM. I got an opportunity to work on some of IBM tools and support customers with training & implemention of those tools. Mainly, I worked on Rational ClearCase & automation scripting using Perl for Rational Test RealTime product.
 
 
 
