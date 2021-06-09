@@ -106,17 +106,6 @@ Note: when '-d' is used, it won't search recursively
 
 ### Copying files with `cp`
 
-let's say, your current directory is `/var/log` and it has directory called `anaconda` with 6 files in it. Destination is /tmp and it doesn't contain 'test' dir
-
-When source is a directory:
-
-`cp anaconda /tmp/test` would complain `cp: -r not specified; omitting directory 'anaconda'`
-
-`cp anaconda/ /tmp/test` would complain `cp: -r not specified; omitting directory 'anaconda'`
-
-`cp anaconda/* /tmp/test` would complain `cp: target '/tmp/test' is not a directory`. This means, if source is a directory, destination also should be a directory and that should exist.
-
-Let's create 'test' direcorty now. `mkdir /tmp/test`
 
 `cp anaconda/* /tmp/test` This will copy all 6 files to /tmp/test (but not the anaconda dir)
 
@@ -124,15 +113,7 @@ Let's create 'test' direcorty now. `mkdir /tmp/test`
 
 `cp anaconda/ -R /tmp/test` This will copy all 6 files to /tmp/test (but not the anaconda dir)
 
-When source is a file:
-
-Let's remove '/tmp/test' dir.
-
 `cp anaconda/anaconda.log /tmp/test` Here, 'anaconda.log' file contents will be copied to 'test' file 
-
-`cp anaconda/anaconda.log /tmp/test/` would complain `cp: cannot create regular file '/tmp/test/': Not a directory`
-
-let's create '/tmp/test' dir and then run,
 
 `cp anaconda/anaconda.log /tmp/test/` will now copy the file 'anaconda.log' to 'test' dir
 
