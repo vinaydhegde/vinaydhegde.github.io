@@ -39,7 +39,13 @@
     width: 100%;
     clear: both;
 
-    .page__content,
+    .page__content {
+       p,
+       li,
+       dl {
+       font-size: 0.9em;
+       }
+     }     
     .page__meta,
     .page__share {
       position: relative;
