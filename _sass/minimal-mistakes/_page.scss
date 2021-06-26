@@ -39,13 +39,7 @@
     width: 100%;
     clear: both;
 
-    .page__content {
-       p,
-       li,
-       dl {
-       font-size: 0.5em;
-       }
-     }     
+    .page__content,    
     .page__meta,
     .page__share {
       position: relative;
@@ -89,7 +83,7 @@
   p,
   li,
   dl {
-    font-size: 0.9em;
+    font-size: 0.5em;
   }
 
   /* paragraph indents */
