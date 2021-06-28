@@ -10,7 +10,7 @@ date: 2021-06-27
 header:
   teaser: /assets/images/nature.jpg
 excerpt: "Ansible on Windows"
-
+---
 
 ### Overview
 
