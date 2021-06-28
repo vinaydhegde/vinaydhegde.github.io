@@ -6,6 +6,12 @@ toc_sticky: true
 tags:
   - Ansible
 
+date: 2021-06-27
+header:
+  teaser: /assets/images/nature.jpg
+excerpt: "Ansible on Windows"
+
+
 ### Overview
 
 Ansible is an open source IT automation engine that automates provisioning, configuration management, application deployment, orchestration, and many other IT processes. 
