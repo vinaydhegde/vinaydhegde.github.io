@@ -85,7 +85,9 @@ ansible-playbook -i sample_inventory.yml sample_playbook.yml
     - ../.passwd.yml
   vars:
     ansible_user: user1
+    {% raw %}
     user1_passwd: "{{user1_passwd}}"
+    {% endraw %}
     
  - name: Install notepadplusplus
    win_command: npp.7.9.5.Installer.x64.exe /S
