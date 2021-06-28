@@ -76,6 +76,39 @@ ansible-playbook -i <inventory-file> <playbook-name>
 ansible-playbook -i sample_inventory.yml sample_playbook.yml
 ```
 
+### A sample Playbook
+
+```
+---
+- hosts: all
+  vars_files:
+    - ../.passwd.yml
+  vars:
+    ansible_user: user1
+    etbuild_passwd: "{{user1_passwd}}"
+    
+ - name: Install notepadplusplus
+   win_command: npp.7.9.5.Installer.x64.exe /S
+   args:
+     creates: C:\Program Files (x86)\Notepad++\notepad++.exe
+   tags: npp
+
+ - name: Install firefox
+   win_shell: \"Firefox Setup 85.0.exe\" -ms -ma
+   args:
+     creates: C:\Program Files\Mozilla Firefox\firefox.exe
+   tags: firefox
+
+ - name: Add domain users to a Administrators group
+   win_group_membership:
+     name: Administrators
+     members:
+       - domain\user1
+       - domain\user2
+     state: present
+   tags: add_users
+```   
+
 ### Setup Ansible Control Node (Server) & Managed Nodes (Clients)
 
 Ansible is an agentless automation tool that you install on a *control node*. From the control node, Ansible manages machines and other devices remotely (by default, over the *SSH* protocol).
@@ -204,7 +237,7 @@ Some of the popular Ansible modules for Windows are:
 - **win_reg_stat**	whether the key/property exists
 - **win_psmodule**	Install Windows PowerShell modules
 - **win_package**	Installs or uninstalls software packages for Windows
-- **win_shel**l	Execute shell commands on target hosts
+- **win_shell**	Execute shell commands on target hosts
 - **win_command**	Executes a command on a remote Windows node
 - **win_group_membership**	Manage Windows local group membership
 - **win_unzip**	Unzips compressed files and archives on the Windows node
