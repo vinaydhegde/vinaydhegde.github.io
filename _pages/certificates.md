@@ -10,7 +10,7 @@ classes: wide
 ---
 ### 1. Certified Kubernetes Administrator 
 <figure style="width: 30%" class="align-left">
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/cka-logo.jpeg" alt=""><br />
+  <img src="{{ site.url }}{{ site.baseurl }}/assets/images/cka-logo.png" alt=""><br />
 </figure> 
 
 <br />
