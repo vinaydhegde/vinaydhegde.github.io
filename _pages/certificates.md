@@ -8,7 +8,7 @@ header:
     caption: "Photo by"
 classes: wide
 ---
-### 1. Kubernetes Certified Administrator 
+### 1. Certified Kubernetes Administrator 
 <figure style="width: 30%" class="align-left">
   <img src="{{ site.url }}{{ site.baseurl }}/assets/images/cka-logo.jpeg" alt=""><br />
 </figure> 
